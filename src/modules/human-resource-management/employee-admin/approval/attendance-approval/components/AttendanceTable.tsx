@@ -207,6 +207,8 @@ export function AttendanceTable({
               </TableHead>
               <TableHead className="h-9 px-3 font-bold text-muted-foreground uppercase tracking-widest text-[8px]">Employee</TableHead>
               <TableHead className="h-9 px-2 font-bold text-muted-foreground uppercase tracking-widest text-[8px] text-center">Work</TableHead>
+              <TableHead className="h-9 px-2 font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest text-[8px] text-center">Reg Hr</TableHead>
+              <TableHead className="h-9 px-2 font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest text-[8px] text-center">Night Diff</TableHead>
               <TableHead className="h-9 px-2 font-bold text-muted-foreground uppercase tracking-widest text-[8px] text-center">Late</TableHead>
               <TableHead className="h-9 px-2 font-bold text-muted-foreground uppercase tracking-widest text-[8px] text-center">Undertime</TableHead>
               <TableHead className="h-9 px-2 font-bold text-muted-foreground uppercase tracking-widest text-[8px] text-center">Overtime</TableHead>
@@ -338,7 +340,43 @@ export function AttendanceTable({
                         (log.work_minutes || 0) > 0 ? "text-foreground" : "text-muted-foreground/40"
                       )}
                     />
-                    <span className="text-[8px] text-muted-foreground uppercase font-semibold tracking-tighter text-center mt-0.5">mins</span>
+                    <span className="text-[8px] text-muted-foreground uppercase font-semibold tracking-tighter text-center mt-0.5">
+                      {log.work_minutes ? `${(log.work_minutes / 60).toFixed(1)}h` : "mins"}
+                    </span>
+                  </div>
+                </TableCell>
+
+                <TableCell className="px-2 py-2 text-center align-middle">
+                  <div className="flex flex-col items-center justify-center w-16 mx-auto">
+                    <Input 
+                      type="number"
+                      value={log.regular_minutes !== undefined && log.regular_minutes !== null ? log.regular_minutes : Math.max(0, (log.work_minutes || 0) - (log.night_diff_minutes || 0))}
+                      onChange={(e) => onUpdateRow(log.log_id, "regular_minutes", parseInt(e.target.value) || 0)}
+                      className={cn(
+                        "h-7 text-[11px] font-bold bg-background/50 border-muted/20 focus:border-blue-400 text-center px-1 rounded-lg",
+                        (log.regular_minutes || 0) > 0 ? "text-blue-600 dark:text-blue-400 font-extrabold" : "text-muted-foreground/40"
+                      )}
+                    />
+                    <span className="text-[8px] text-muted-foreground uppercase font-semibold tracking-tighter text-center mt-0.5">
+                      {(log.regular_minutes || 0) > 0 ? `${((log.regular_minutes || 0) / 60).toFixed(1)}h` : "mins"}
+                    </span>
+                  </div>
+                </TableCell>
+
+                <TableCell className="px-2 py-2 text-center align-middle">
+                  <div className="flex flex-col items-center justify-center w-16 mx-auto">
+                    <Input 
+                      type="number"
+                      value={log.night_diff_minutes || 0}
+                      onChange={(e) => onUpdateRow(log.log_id, "night_diff_minutes", parseInt(e.target.value) || 0)}
+                      className={cn(
+                        "h-7 text-[11px] font-bold bg-background/50 border-muted/20 focus:border-indigo-400 text-center px-1 rounded-lg",
+                        (log.night_diff_minutes || 0) > 0 ? "text-indigo-600 dark:text-indigo-400 font-extrabold" : "text-muted-foreground/40"
+                      )}
+                    />
+                    <span className="text-[8px] text-muted-foreground uppercase font-semibold tracking-tighter text-center mt-0.5">
+                      {(log.night_diff_minutes || 0) > 0 ? `${((log.night_diff_minutes || 0) / 60).toFixed(1)}h` : "mins"}
+                    </span>
                   </div>
                 </TableCell>
 

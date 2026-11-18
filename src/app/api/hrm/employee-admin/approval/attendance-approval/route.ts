@@ -35,6 +35,8 @@ interface Sched {
   time_out: string;
   grace_period: number;
   source: "oncall" | "department";
+  lunch_start?: string | null;
+  lunch_end?: string | null;
 }
 
 function timeToDate(dateStr: string, timeStr: string): Date {
@@ -51,6 +53,64 @@ function parseLocalISO(isoStr: string): Date {
   const [y, mm, d] = datePart.split("-").map(Number);
   const [h, m, s] = timePart.replace('Z', '').split(":").map(Number);
   return new Date(y, mm - 1, d, h, m, Math.floor(s || 0));
+}
+
+function calculateNightDiffMinutes(
+  workStart: Date,
+  workEnd: Date,
+  breakStart?: Date | null,
+  breakEnd?: Date | null,
+  ndStartStr = "22:00",
+  ndEndStr = "06:00"
+): number {
+  if (!workStart || !workEnd || workEnd <= workStart) return 0;
+
+  const [sH, sM] = ndStartStr.split(":").map(Number);
+  const [eH, eM] = ndEndStr.split(":").map(Number);
+
+  let totalNdMs = 0;
+
+  const cursor = new Date(workStart);
+  cursor.setDate(cursor.getDate() - 1);
+  cursor.setHours(0, 0, 0, 0);
+
+  const maxDate = new Date(workEnd);
+  maxDate.setDate(maxDate.getDate() + 1);
+
+  while (cursor <= maxDate) {
+    const y = cursor.getFullYear();
+    const m = cursor.getMonth();
+    const d = cursor.getDate();
+
+    const wStart = new Date(y, m, d, sH || 0, sM || 0, 0, 0);
+    let wEnd: Date;
+    if ((sH || 0) > (eH || 0) || ((sH || 0) === (eH || 0) && (sM || 0) >= (eM || 0))) {
+      wEnd = new Date(y, m, d + 1, eH || 0, eM || 0, 0, 0);
+    } else {
+      wEnd = new Date(y, m, d, eH || 0, eM || 0, 0, 0);
+    }
+
+    const oStart = Math.max(workStart.getTime(), wStart.getTime());
+    const oEnd = Math.min(workEnd.getTime(), wEnd.getTime());
+
+    if (oEnd > oStart) {
+      let segment = oEnd - oStart;
+
+      if (breakStart && breakEnd && breakEnd > breakStart) {
+        const bStart = Math.max(breakStart.getTime(), oStart);
+        const bEnd = Math.min(breakEnd.getTime(), oEnd);
+        if (bEnd > bStart) {
+          segment -= (bEnd - bStart);
+        }
+      }
+
+      totalNdMs += Math.max(0, segment);
+    }
+
+    cursor.setDate(cursor.getDate() + 1);
+  }
+
+  return Math.floor(totalNdMs / 60000);
 }
 
 // ============================================================================
@@ -307,25 +367,37 @@ export async function GET(req: NextRequest) {
       directusFetch(`/items/department_schedule?limit=1000&fields=department_id,work_start,work_end,lunch_start,lunch_end,break_start,break_end,grace_period`),
       directusFetch(`/items/oncall_list?${userIdsFilter}&limit=1000&fields=user_id,dept_sched_id`),
       directusFetch(`/items/oncall_schedule?limit=1000&fields=id,department_id,group,work_start,work_end,lunch_start,lunch_end,break_start,break_end,grace_period,schedule_date,workdays`),
-      directusFetch(`/items/attendance_approval?${approvalFilter}&fields=approval_id,employee_id,date_schedule,status,remarks,work_minutes,late_minutes,undertime_minutes,overtime_minutes`),
+      directusFetch(`/items/attendance_approval?${approvalFilter}&fields=approval_id,employee_id,date_schedule,status,remarks,work_minutes,regular_minutes,night_diff_minutes,late_minutes,undertime_minutes,overtime_minutes`),
       directusFetch(`/items/overtime_request?${otFilter}&limit=1000&fields=overtime_id,user_id,request_date,status,duration_minutes,purpose,remarks,sched_timeout,ot_from,ot_to,filed_at,approved_at`).catch(() => ({ data: [] })),
       directusFetch(`/items/undertime_request?${utFilter}&limit=1000&fields=undertime_id,user_id,request_date,status,duration_minutes,reason,remarks,sched_timeout,actual_timeout,filed_at,approved_at,emp_attatchment_uuid,override_attachment_uuid`).catch(() => ({ data: [] })),
       directusFetch(`/items/leave_request?${leaveFilter}&limit=1000&fields=leave_id,user_id,department_id,leave_type,leave_start,leave_end,total_days,reason,remarks,status,current_approval_level,approver_id,approved_at,filed_at,is_paid`).catch(() => ({ data: [] })),
-      directusFetch(`/items/general_setting?filter[setting_key][_eq]=payroll_no_time_out_undertime_amount&fields=setting_key,setting_value&limit=1`).catch(() => ({ data: [] }))
+      directusFetch(`/items/general_setting?filter[setting_key][_in]=payroll_no_time_out_undertime_amount,payroll_night_diff_start_time,payroll_night_diff_end_time,payroll_ot_minimum_minutes,payroll_ot_incremental_minutes&fields=setting_key,setting_value&limit=10`).catch(() => ({ data: [] }))
     ]);
 
-    // Parse penalty for missing time out from general_setting (defaults to 240 if missing/invalid)
+    // Parse general settings with safe fallbacks
     let noTimeOutUndertimePenalty = 240;
-    const noTimeOutSetting = generalSettingRes?.data?.[0];
-    if (
-      noTimeOutSetting &&
-      noTimeOutSetting.setting_value !== undefined &&
-      noTimeOutSetting.setting_value !== null &&
-      String(noTimeOutSetting.setting_value).trim() !== ""
-    ) {
-      const parsed = Number(noTimeOutSetting.setting_value);
-      if (!isNaN(parsed) && parsed >= 0) {
-        noTimeOutUndertimePenalty = parsed;
+    let nightDiffStartTime = "22:00";
+    let nightDiffEndTime = "06:00";
+    let otMinimumMinutes = 30;
+    let otIncrementalMinutes = 30;
+
+    const generalSettings = generalSettingRes?.data || [];
+    for (const s of generalSettings) {
+      if (!s || s.setting_value === undefined || s.setting_value === null) continue;
+      const val = String(s.setting_value).trim();
+      if (s.setting_key === "payroll_no_time_out_undertime_amount") {
+        const parsed = Number(val);
+        if (!isNaN(parsed) && parsed >= 0) noTimeOutUndertimePenalty = parsed;
+      } else if (s.setting_key === "payroll_night_diff_start_time") {
+        if (val) nightDiffStartTime = val;
+      } else if (s.setting_key === "payroll_night_diff_end_time") {
+        if (val) nightDiffEndTime = val;
+      } else if (s.setting_key === "payroll_ot_minimum_minutes") {
+        const parsed = Number(val);
+        if (!isNaN(parsed) && parsed >= 0) otMinimumMinutes = parsed;
+      } else if (s.setting_key === "payroll_ot_incremental_minutes") {
+        const parsed = Number(val);
+        if (!isNaN(parsed) && parsed >= 0) otIncrementalMinutes = parsed;
       }
     }
 
@@ -344,6 +416,8 @@ export async function GET(req: NextRequest) {
       status: string;
       remarks: string | null;
       work_minutes: number;
+      regular_minutes?: number;
+      night_diff_minutes?: number;
       late_minutes: number;
       undertime_minutes: number;
       overtime_minutes: number;
@@ -516,6 +590,8 @@ export async function GET(req: NextRequest) {
               time_out: ocSched.work_end,
               grace_period: Number(ocSched.grace_period ?? 5),
               source: "oncall",
+              lunch_start: ocSched.lunch_start || null,
+              lunch_end: ocSched.lunch_end || null,
             };
           }
         }
@@ -532,6 +608,8 @@ export async function GET(req: NextRequest) {
             time_out: deptSched.work_end,
             grace_period: Number(deptSched.grace_period ?? 5),
             source: "department",
+            lunch_start: deptSched.lunch_start || null,
+            lunch_end: deptSched.lunch_end || null,
           };
         }
       }
@@ -655,7 +733,15 @@ export async function GET(req: NextRequest) {
 
               if (otRequestedMins > 0 && actualOut > otStartTime) {
                 const actualWorkedOtMins = Math.floor((actualOut.getTime() - otStartTime.getTime()) / 60000);
-                overtime_minutes = Math.max(0, Math.min(otRequestedMins, actualWorkedOtMins));
+                if (actualWorkedOtMins < otMinimumMinutes) {
+                  overtime_minutes = 0;
+                } else {
+                  let creditedMins = actualWorkedOtMins;
+                  if (otIncrementalMinutes > 0) {
+                    creditedMins = Math.floor(actualWorkedOtMins / otIncrementalMinutes) * otIncrementalMinutes;
+                  }
+                  overtime_minutes = Math.max(0, Math.min(otRequestedMins, creditedMins));
+                }
               } else {
                 overtime_minutes = 0;
               }
@@ -720,7 +806,15 @@ export async function GET(req: NextRequest) {
 
           if (actualOut > otStartTime) {
             const actualWorkedOtMins = Math.floor((actualOut.getTime() - otStartTime.getTime()) / 60000);
-            otApprovedMins = Math.max(0, Math.min(otRequestedDuration, actualWorkedOtMins));
+            if (actualWorkedOtMins < otMinimumMinutes) {
+              otApprovedMins = 0;
+            } else {
+              let creditedMins = actualWorkedOtMins;
+              if (otIncrementalMinutes > 0) {
+                creditedMins = Math.floor(actualWorkedOtMins / otIncrementalMinutes) * otIncrementalMinutes;
+              }
+              otApprovedMins = Math.max(0, Math.min(otRequestedDuration, creditedMins));
+            }
           }
         }
       }
@@ -728,6 +822,54 @@ export async function GET(req: NextRequest) {
       // Overtime is strictly based on approved overtime request and actual time out
       overtime_minutes = isOtApproved && otApprovedMins > 0 ? otApprovedMins : 0;
 
+      // Calculate Night Differential and Regular Hours
+      let night_diff_minutes = 0;
+      let regular_minutes = 0;
+
+      if (work_minutes > 0) {
+        let workStart: Date | null = null;
+        let workEnd: Date | null = null;
+
+        if (log.time_in) {
+          workStart = parseLocalISO(log.time_in);
+        } else if (schedule?.time_in) {
+          workStart = timeToDate(log.log_date, schedule.time_in);
+        }
+
+        if (log.time_out) {
+          workEnd = parseLocalISO(log.time_out);
+        } else if (schedule?.time_out) {
+          workEnd = timeToDate(log.log_date, schedule.time_out);
+        }
+
+        if (workStart) {
+          if (workEnd && workEnd < workStart) {
+            workEnd = new Date(workEnd.getTime() + 24 * 60 * 60 * 1000);
+          }
+          if (!workEnd || workEnd <= workStart) {
+            workEnd = new Date(workStart.getTime() + work_minutes * 60000);
+          }
+
+          let bStart: Date | null = null;
+          let bEnd: Date | null = null;
+          if (schedule?.lunch_start && schedule?.lunch_end) {
+            bStart = timeToDate(log.log_date, schedule.lunch_start);
+            bEnd = timeToDate(log.log_date, schedule.lunch_end);
+            if (workStart && bStart < workStart) {
+              bStart = new Date(bStart.getTime() + 24 * 60 * 60 * 1000);
+              bEnd = new Date(bEnd.getTime() + 24 * 60 * 60 * 1000);
+            }
+            if (bEnd < bStart) {
+              bEnd = new Date(bEnd.getTime() + 24 * 60 * 60 * 1000);
+            }
+          }
+
+          const rawNd = calculateNightDiffMinutes(workStart, workEnd, bStart, bEnd, nightDiffStartTime, nightDiffEndTime);
+          night_diff_minutes = Math.max(0, Math.min(work_minutes, rawNd));
+        }
+
+        regular_minutes = Math.max(0, work_minutes - night_diff_minutes);
+      }
       // 3. OVERRIDE with manual adjustments if they exist in attendance_approval
       const approvalDatePart = String(log.log_date).split('T')[0].split(' ')[0];
       const approvalKey = `${log.user_id}_${approvalDatePart}`;
@@ -735,6 +877,12 @@ export async function GET(req: NextRequest) {
 
       if (manualAdjustments) {
         work_minutes = manualAdjustments.work_minutes ?? work_minutes;
+        if (manualAdjustments.regular_minutes !== undefined && manualAdjustments.regular_minutes !== null) {
+          regular_minutes = manualAdjustments.regular_minutes;
+        }
+        if (manualAdjustments.night_diff_minutes !== undefined && manualAdjustments.night_diff_minutes !== null) {
+          night_diff_minutes = manualAdjustments.night_diff_minutes;
+        }
         late_minutes = manualAdjustments.late_minutes ?? late_minutes;
         undertime_minutes = manualAdjustments.undertime_minutes ?? undertime_minutes;
         if (manualAdjustments.overtime_minutes !== undefined && manualAdjustments.overtime_minutes !== null) {
@@ -804,6 +952,8 @@ export async function GET(req: NextRequest) {
         user_mname: user?.user_mname || null,
         department_name: dept?.department_name || null,
         work_minutes,
+        regular_minutes,
+        night_diff_minutes,
         late_minutes,
         undertime_minutes,
         overtime_minutes,
@@ -852,6 +1002,8 @@ export async function GET(req: NextRequest) {
         }
 
         let work_minutes = 0;
+        let regular_minutes = 0;
+        let night_diff_minutes = 0;
         let late_minutes = 0;
         let undertime_minutes = 0;
         let overtime_minutes = isAbsentOtApproved && absentOtApprovedMins > 0 ? absentOtApprovedMins : 0;
@@ -860,6 +1012,10 @@ export async function GET(req: NextRequest) {
 
         if (manualAdjustments) {
           work_minutes = manualAdjustments.work_minutes ?? 0;
+          regular_minutes = manualAdjustments.regular_minutes !== undefined && manualAdjustments.regular_minutes !== null
+            ? manualAdjustments.regular_minutes
+            : Math.max(0, work_minutes - (manualAdjustments.night_diff_minutes ?? 0));
+          night_diff_minutes = manualAdjustments.night_diff_minutes ?? 0;
           late_minutes = manualAdjustments.late_minutes ?? 0;
           undertime_minutes = manualAdjustments.undertime_minutes ?? 0;
           overtime_minutes = (manualAdjustments.overtime_minutes && manualAdjustments.overtime_minutes > 0)
@@ -937,6 +1093,8 @@ export async function GET(req: NextRequest) {
           user_mname: emp.user_mname || null,
           department_name: dept?.department_name || null,
           work_minutes,
+          regular_minutes,
+          night_diff_minutes,
           late_minutes,
           undertime_minutes,
           overtime_minutes,
@@ -1009,7 +1167,19 @@ export async function PATCH(req: NextRequest) {
 
     // Process items safely
     for (const item of items) {
-      const { log_id, employee_id, date_schedule, status, remarks, work_minutes, late_minutes, undertime_minutes, overtime_minutes } = item;
+      const {
+        log_id,
+        employee_id,
+        date_schedule,
+        status,
+        remarks,
+        work_minutes,
+        regular_minutes,
+        night_diff_minutes,
+        late_minutes,
+        undertime_minutes,
+        overtime_minutes,
+      } = item;
       const cleanDate = date_schedule ? date_schedule.split('T')[0] : null;
 
       if (!status || !['approved', 'rejected', 'pending'].includes(status) || !employee_id || !cleanDate) {
@@ -1068,6 +1238,8 @@ export async function PATCH(req: NextRequest) {
         approved_by: number;
         approved_at: string;
         work_minutes: number;
+        regular_minutes: number;
+        night_diff_minutes: number;
         late_minutes: number;
         undertime_minutes: number;
         overtime_minutes: number;
@@ -1089,16 +1261,32 @@ export async function PATCH(req: NextRequest) {
             if (otEnd < otStart) otEnd = new Date(otEnd.getTime() + 24 * 60 * 60 * 1000);
             otMins = Math.floor((otEnd.getTime() - otStart.getTime()) / 60000);
           }
-          if (otMins > 0) resolvedOvertimeMinutes = otMins;
+          if (otMins > 0) {
+            // Apply incremental and minimum OT rules if configured
+            const minOt = 30;
+            const incOt = 30;
+            if (otMins < minOt) {
+              resolvedOvertimeMinutes = 0;
+            } else {
+              resolvedOvertimeMinutes = incOt > 0 ? Math.floor(otMins / incOt) * incOt : otMins;
+            }
+          }
         }
       }
 
+      const resolvedWorkMinutes = work_minutes ?? 0;
+      const resolvedNightDiff = night_diff_minutes ?? 0;
+      const resolvedRegular = regular_minutes !== undefined && regular_minutes !== null
+        ? regular_minutes
+        : Math.max(0, resolvedWorkMinutes - resolvedNightDiff);
       const approvalData: ApprovalPOSTData = {
         employee_id,
         date_schedule: cleanDate,
         approved_by: userId,
         approved_at: new Date().toISOString(),
-        work_minutes: work_minutes ?? 0,
+        work_minutes: resolvedWorkMinutes,
+        regular_minutes: resolvedRegular,
+        night_diff_minutes: resolvedNightDiff,
         late_minutes: late_minutes ?? 0,
         undertime_minutes: undertime_minutes ?? 0,
         overtime_minutes: resolvedOvertimeMinutes,

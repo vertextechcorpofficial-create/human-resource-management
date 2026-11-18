@@ -73,6 +73,18 @@ export function ApprovalModal({
                </div>
                <div className="w-[1px] h-8 bg-border/50 self-center" />
                <div className="flex-1 text-center">
+                  <div className="text-[10px] uppercase font-bold text-blue-600 dark:text-blue-400">Reg Hr</div>
+                  <div className="text-sm font-bold text-blue-600 dark:text-blue-400">
+                    {log.regular_minutes !== undefined && log.regular_minutes !== null ? log.regular_minutes : Math.max(0, (log.work_minutes || 0) - (log.night_diff_minutes || 0))}m
+                  </div>
+               </div>
+               <div className="w-[1px] h-8 bg-border/50 self-center" />
+               <div className="flex-1 text-center">
+                  <div className="text-[10px] uppercase font-bold text-indigo-600 dark:text-indigo-400">Night Diff</div>
+                  <div className="text-sm font-bold text-indigo-600 dark:text-indigo-400">{log.night_diff_minutes || 0}m</div>
+               </div>
+               <div className="w-[1px] h-8 bg-border/50 self-center" />
+               <div className="flex-1 text-center">
                   <div className="text-[10px] uppercase font-bold text-muted-foreground">Late</div>
                   <div className="text-sm font-bold text-red-500">{log.late_minutes}m</div>
                </div>

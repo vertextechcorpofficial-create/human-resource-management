@@ -16,7 +16,8 @@ import {
   Eye,
   EyeOff,
   Timer,
-  Clock
+  Clock,
+  Moon
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -125,13 +126,16 @@ export function AttendanceApprovalCutoff() {
       });
       const mappedLogs = (response.data || []).map(log => {
         const isApprovedOt = Boolean(log.ot_request && String(log.ot_request.status).toLowerCase() === "approved");
-        if (isApprovedOt && log.ot_request) {
-          return {
-            ...log,
-            overtime_minutes: computeLogOvertimeMinutes(log),
-          };
-        }
-        return log;
+        const nd = log.night_diff_minutes ?? 0;
+        const reg = log.regular_minutes !== undefined && log.regular_minutes !== null
+          ? log.regular_minutes
+          : Math.max(0, (log.work_minutes || 0) - nd);
+        return {
+          ...log,
+          regular_minutes: reg,
+          night_diff_minutes: nd,
+          ...(isApprovedOt && log.ot_request ? { overtime_minutes: computeLogOvertimeMinutes(log) } : {})
+        };
       });
       setLogs(mappedLogs);
       toast.success("Logs loaded successfully");
@@ -143,9 +147,20 @@ export function AttendanceApprovalCutoff() {
   };
 
   const handleUpdateRow = (logId: number, field: string, value: string | number | null) => {
-    setLogs(prev => prev.map(log => 
-      log.log_id === logId ? { ...log, [field]: value } : log
-    ));
+    setLogs(prev => prev.map(log => {
+      if (log.log_id !== logId) return log;
+      const updated = { ...log, [field]: value };
+      const numVal = typeof value === "number" ? value : parseInt(String(value)) || 0;
+      if (field === "regular_minutes") {
+        updated.work_minutes = numVal + (updated.night_diff_minutes || 0);
+      } else if (field === "night_diff_minutes") {
+        updated.work_minutes = (updated.regular_minutes || 0) + numVal;
+      } else if (field === "work_minutes") {
+        const nd = updated.night_diff_minutes || 0;
+        updated.regular_minutes = Math.max(0, numVal - nd);
+      }
+      return updated;
+    }));
   };
 
   const getEffectiveOvertimeMinutes = (log: AttendanceLogWithUser): number => {
@@ -166,6 +181,8 @@ export function AttendanceApprovalCutoff() {
         status: log.approval_status || "pending",
         remarks: log.status || "",
         work_minutes: log.work_minutes,
+        regular_minutes: log.regular_minutes !== undefined && log.regular_minutes !== null ? log.regular_minutes : Math.max(0, (log.work_minutes || 0) - (log.night_diff_minutes || 0)),
+        night_diff_minutes: log.night_diff_minutes || 0,
         late_minutes: log.late_minutes,
         undertime_minutes: log.undertime_minutes,
         overtime_minutes: getEffectiveOvertimeMinutes(log)
@@ -200,6 +217,8 @@ export function AttendanceApprovalCutoff() {
           status: log.approval_status || "pending",
           remarks: log.status || "",
           work_minutes: log.work_minutes,
+          regular_minutes: log.regular_minutes !== undefined && log.regular_minutes !== null ? log.regular_minutes : Math.max(0, (log.work_minutes || 0) - (log.night_diff_minutes || 0)),
+          night_diff_minutes: log.night_diff_minutes || 0,
           late_minutes: log.late_minutes,
           undertime_minutes: log.undertime_minutes,
           overtime_minutes: log.overtime_minutes
@@ -251,6 +270,8 @@ export function AttendanceApprovalCutoff() {
         status: "approved" as const,
         remarks: log.status || "Batch approved",
         work_minutes: log.work_minutes,
+        regular_minutes: log.regular_minutes !== undefined && log.regular_minutes !== null ? log.regular_minutes : Math.max(0, (log.work_minutes || 0) - (log.night_diff_minutes || 0)),
+        night_diff_minutes: log.night_diff_minutes || 0,
         late_minutes: log.late_minutes,
         undertime_minutes: log.undertime_minutes,
         overtime_minutes: getEffectiveOvertimeMinutes(log)
@@ -276,6 +297,8 @@ export function AttendanceApprovalCutoff() {
         status: "approved",
         remarks,
         work_minutes: log.work_minutes,
+        regular_minutes: log.regular_minutes !== undefined && log.regular_minutes !== null ? log.regular_minutes : Math.max(0, (log.work_minutes || 0) - (log.night_diff_minutes || 0)),
+        night_diff_minutes: log.night_diff_minutes || 0,
         late_minutes: log.late_minutes,
         undertime_minutes: log.undertime_minutes,
         overtime_minutes: getEffectiveOvertimeMinutes(log)
@@ -296,6 +319,8 @@ export function AttendanceApprovalCutoff() {
         status: "rejected",
         remarks,
         work_minutes: log.work_minutes,
+        regular_minutes: log.regular_minutes !== undefined && log.regular_minutes !== null ? log.regular_minutes : Math.max(0, (log.work_minutes || 0) - (log.night_diff_minutes || 0)),
+        night_diff_minutes: log.night_diff_minutes || 0,
         late_minutes: log.late_minutes,
         undertime_minutes: log.undertime_minutes,
         overtime_minutes: log.overtime_minutes
@@ -326,6 +351,8 @@ export function AttendanceApprovalCutoff() {
         status: "approved" as const,
         remarks: log.status || "Batch approved",
         work_minutes: log.work_minutes,
+        regular_minutes: log.regular_minutes !== undefined && log.regular_minutes !== null ? log.regular_minutes : Math.max(0, (log.work_minutes || 0) - (log.night_diff_minutes || 0)),
+        night_diff_minutes: log.night_diff_minutes || 0,
         late_minutes: log.late_minutes,
         undertime_minutes: log.undertime_minutes,
         overtime_minutes: getEffectiveOvertimeMinutes(log)
@@ -361,6 +388,8 @@ export function AttendanceApprovalCutoff() {
         status: "rejected" as const,
         remarks: log.status || "Batch rejected",
         work_minutes: log.work_minutes,
+        regular_minutes: log.regular_minutes !== undefined && log.regular_minutes !== null ? log.regular_minutes : Math.max(0, (log.work_minutes || 0) - (log.night_diff_minutes || 0)),
+        night_diff_minutes: log.night_diff_minutes || 0,
         late_minutes: log.late_minutes,
         undertime_minutes: log.undertime_minutes,
         overtime_minutes: getEffectiveOvertimeMinutes(log)
@@ -415,10 +444,16 @@ export function AttendanceApprovalCutoff() {
       const requestedOtMinutes = getLogRequestedOtMinutes(log);
       const computedOtMinutes = computeLogOvertimeMinutes(log);
       const approvedOtMinutes = isApprovedOt ? computedOtMinutes : 0;
+      const regMinutes = log.regular_minutes !== undefined && log.regular_minutes !== null
+        ? log.regular_minutes
+        : Math.max(0, (log.work_minutes || 0) - (log.night_diff_minutes || 0));
+      const ndMinutes = log.night_diff_minutes || 0;
 
       const existing = summaryMap.get(log.user_id);
       if (existing) {
         existing.total_work_minutes += log.work_minutes || 0;
+        existing.total_regular_minutes = (existing.total_regular_minutes || 0) + regMinutes;
+        existing.total_night_diff_minutes = (existing.total_night_diff_minutes || 0) + ndMinutes;
         existing.total_late_minutes += log.late_minutes || 0;
         existing.total_undertime_minutes += log.undertime_minutes || 0;
         existing.total_overtime_minutes += approvedOtMinutes;
@@ -462,6 +497,8 @@ export function AttendanceApprovalCutoff() {
           user_lname: log.user_lname,
           department_name: log.department_name,
           total_work_minutes: log.work_minutes || 0,
+          total_regular_minutes: regMinutes,
+          total_night_diff_minutes: ndMinutes,
           total_late_minutes: log.late_minutes || 0,
           total_undertime_minutes: log.undertime_minutes || 0,
           total_overtime_minutes: approvedOtMinutes,
@@ -482,15 +519,21 @@ export function AttendanceApprovalCutoff() {
   }, [filteredLogs]);
 
   const cutoffTotals = React.useMemo(() => {
+    let totalWork = 0;
+    let totalReg = 0;
+    let totalNd = 0;
     let totalOt = 0;
     let totalUt = 0;
     let totalLeaves = 0;
     employeeSummaries.forEach(s => {
+      totalWork += s.total_work_minutes || 0;
+      totalReg += s.total_regular_minutes || 0;
+      totalNd += s.total_night_diff_minutes || 0;
       totalOt += s.total_overtime_minutes || 0;
       totalUt += s.total_undertime_minutes || 0;
       totalLeaves += s.total_leave_days || 0;
     });
-    return { totalOt, totalUt, totalLeaves };
+    return { totalWork, totalReg, totalNd, totalOt, totalUt, totalLeaves };
   }, [employeeSummaries]);
 
   const selectedEmployeeLogs = React.useMemo(() => {
@@ -683,8 +726,19 @@ export function AttendanceApprovalCutoff() {
         </div>
 
         <div className="flex items-center gap-3 flex-wrap">
-          {(cutoffTotals.totalOt > 0 || cutoffTotals.totalUt > 0 || cutoffTotals.totalLeaves > 0) && (
+          {(cutoffTotals.totalReg > 0 || cutoffTotals.totalNd > 0 || cutoffTotals.totalOt > 0 || cutoffTotals.totalUt > 0 || cutoffTotals.totalLeaves > 0) && (
             <div className="flex items-center gap-2 flex-wrap">
+              {cutoffTotals.totalReg > 0 && (
+                <Badge variant="outline" className="text-xs font-bold px-2.5 py-1 bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/30 gap-1.5 shadow-xs whitespace-nowrap">
+                  Reg: {(cutoffTotals.totalReg / 60).toFixed(1)}h ({cutoffTotals.totalReg}m)
+                </Badge>
+              )}
+              {cutoffTotals.totalNd > 0 && (
+                <Badge variant="outline" className="text-xs font-bold px-2.5 py-1 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/30 gap-1.5 shadow-xs whitespace-nowrap">
+                  <Moon className="h-3.5 w-3.5" />
+                  ND: {(cutoffTotals.totalNd / 60).toFixed(1)}h ({cutoffTotals.totalNd}m)
+                </Badge>
+              )}
               {cutoffTotals.totalOt > 0 && (
                 <Badge variant="outline" className="text-xs font-bold px-2.5 py-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 gap-1.5 shadow-xs whitespace-nowrap">
                   <Timer className="h-3.5 w-3.5" />

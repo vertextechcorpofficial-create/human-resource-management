@@ -64,13 +64,16 @@ export function AttendanceApprovalDaily() {
       });
       const mappedLogs = (response.data || []).map(log => {
         const isApprovedOt = Boolean(log.ot_request && String(log.ot_request.status).toLowerCase() === "approved");
-        if (isApprovedOt && log.ot_request) {
-          return {
-            ...log,
-            overtime_minutes: computeLogOvertimeMinutes(log),
-          };
-        }
-        return log;
+        const nd = log.night_diff_minutes ?? 0;
+        const reg = log.regular_minutes !== undefined && log.regular_minutes !== null
+          ? log.regular_minutes
+          : Math.max(0, (log.work_minutes || 0) - nd);
+        return {
+          ...log,
+          regular_minutes: reg,
+          night_diff_minutes: nd,
+          ...(isApprovedOt && log.ot_request ? { overtime_minutes: computeLogOvertimeMinutes(log) } : {})
+        };
       });
       setLogs(mappedLogs);
     } catch {
@@ -117,9 +120,20 @@ export function AttendanceApprovalDaily() {
   }, [filteredLogs]);
 
   const handleUpdateRow = (logId: number, field: string, value: string | number | null) => {
-    setLogs(prev => prev.map(log => 
-      log.log_id === logId ? { ...log, [field]: value } : log
-    ));
+    setLogs(prev => prev.map(log => {
+      if (log.log_id !== logId) return log;
+      const updated = { ...log, [field]: value };
+      const numVal = typeof value === "number" ? value : parseInt(String(value)) || 0;
+      if (field === "regular_minutes") {
+        updated.work_minutes = numVal + (updated.night_diff_minutes || 0);
+      } else if (field === "night_diff_minutes") {
+        updated.work_minutes = (updated.regular_minutes || 0) + numVal;
+      } else if (field === "work_minutes") {
+        const nd = updated.night_diff_minutes || 0;
+        updated.regular_minutes = Math.max(0, numVal - nd);
+      }
+      return updated;
+    }));
   };
 
   const handleApprove = async (log: AttendanceLogWithUser, remarks: string) => {
@@ -132,6 +146,8 @@ export function AttendanceApprovalDaily() {
         status: "approved",
         remarks,
         work_minutes: log.work_minutes,
+        regular_minutes: log.regular_minutes !== undefined && log.regular_minutes !== null ? log.regular_minutes : Math.max(0, (log.work_minutes || 0) - (log.night_diff_minutes || 0)),
+        night_diff_minutes: log.night_diff_minutes || 0,
         late_minutes: log.late_minutes,
         undertime_minutes: log.undertime_minutes,
         overtime_minutes: log.overtime_minutes
@@ -155,6 +171,8 @@ export function AttendanceApprovalDaily() {
         status: "rejected",
         remarks,
         work_minutes: log.work_minutes,
+        regular_minutes: log.regular_minutes !== undefined && log.regular_minutes !== null ? log.regular_minutes : Math.max(0, (log.work_minutes || 0) - (log.night_diff_minutes || 0)),
+        night_diff_minutes: log.night_diff_minutes || 0,
         late_minutes: log.late_minutes,
         undertime_minutes: log.undertime_minutes,
         overtime_minutes: log.overtime_minutes
@@ -187,6 +205,8 @@ export function AttendanceApprovalDaily() {
         status: "approved" as const,
         remarks: log.status || "Batch approved",
         work_minutes: log.work_minutes,
+        regular_minutes: log.regular_minutes !== undefined && log.regular_minutes !== null ? log.regular_minutes : Math.max(0, (log.work_minutes || 0) - (log.night_diff_minutes || 0)),
+        night_diff_minutes: log.night_diff_minutes || 0,
         late_minutes: log.late_minutes,
         undertime_minutes: log.undertime_minutes,
         overtime_minutes: log.overtime_minutes
@@ -222,6 +242,8 @@ export function AttendanceApprovalDaily() {
         status: "rejected" as const,
         remarks: log.status || "Batch rejected",
         work_minutes: log.work_minutes,
+        regular_minutes: log.regular_minutes !== undefined && log.regular_minutes !== null ? log.regular_minutes : Math.max(0, (log.work_minutes || 0) - (log.night_diff_minutes || 0)),
+        night_diff_minutes: log.night_diff_minutes || 0,
         late_minutes: log.late_minutes,
         undertime_minutes: log.undertime_minutes,
         overtime_minutes: log.overtime_minutes
@@ -249,6 +271,8 @@ export function AttendanceApprovalDaily() {
         status: log.approval_status || "pending",
         remarks: log.status || "",
         work_minutes: log.work_minutes,
+        regular_minutes: log.regular_minutes !== undefined && log.regular_minutes !== null ? log.regular_minutes : Math.max(0, (log.work_minutes || 0) - (log.night_diff_minutes || 0)),
+        night_diff_minutes: log.night_diff_minutes || 0,
         late_minutes: log.late_minutes,
         undertime_minutes: log.undertime_minutes,
         overtime_minutes: log.overtime_minutes
@@ -284,6 +308,8 @@ export function AttendanceApprovalDaily() {
         status: log.approval_status || "pending",
         remarks: log.status || "",
         work_minutes: log.work_minutes,
+        regular_minutes: log.regular_minutes !== undefined && log.regular_minutes !== null ? log.regular_minutes : Math.max(0, (log.work_minutes || 0) - (log.night_diff_minutes || 0)),
+        night_diff_minutes: log.night_diff_minutes || 0,
         late_minutes: log.late_minutes,
         undertime_minutes: log.undertime_minutes,
         overtime_minutes: log.overtime_minutes

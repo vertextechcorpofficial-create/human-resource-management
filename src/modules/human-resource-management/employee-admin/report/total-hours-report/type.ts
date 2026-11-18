@@ -15,6 +15,8 @@ export interface TotalHoursRecord {
 
   // Approved Metrics (from attendance_approval / approved calculation)
   work_minutes: number;
+  regular_minutes?: number;
+  night_diff_minutes?: number;
   late_minutes: number;
   undertime_minutes: number;
   overtime_minutes: number;
@@ -62,6 +64,8 @@ export interface Department {
 
 export interface TotalHoursSummary {
   totalWorkMinutes: number;
+  totalRegularMinutes?: number;
+  totalNightDiffMinutes?: number;
   totalLateMinutes: number;
   totalUndertimeMinutes: number;
   totalOvertimeMinutes: number;
