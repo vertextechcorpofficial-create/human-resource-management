@@ -870,7 +870,6 @@ export async function GET(req: NextRequest) {
 
         regular_minutes = Math.max(0, work_minutes - night_diff_minutes);
       }
-
       // 3. OVERRIDE with manual adjustments if they exist in attendance_approval
       const approvalDatePart = String(log.log_date).split('T')[0].split(' ')[0];
       const approvalKey = `${log.user_id}_${approvalDatePart}`;
@@ -1280,7 +1279,6 @@ export async function PATCH(req: NextRequest) {
       const resolvedRegular = regular_minutes !== undefined && regular_minutes !== null
         ? regular_minutes
         : Math.max(0, resolvedWorkMinutes - resolvedNightDiff);
-
       const approvalData: ApprovalPOSTData = {
         employee_id,
         date_schedule: cleanDate,

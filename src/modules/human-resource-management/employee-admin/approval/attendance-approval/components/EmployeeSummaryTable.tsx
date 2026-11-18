@@ -166,7 +166,6 @@ export function EmployeeSummaryTable({
                           ND: {summary.total_night_diff_minutes || 0}m
                         </Badge>
                       )}
-
                       {/* Pending Notifications */}
                       {(summary.pending_ot_count || 0) > 0 && (
                         <Badge variant="outline" className="text-[9px] font-bold px-1.5 py-0 h-4.5 bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/40 whitespace-nowrap">

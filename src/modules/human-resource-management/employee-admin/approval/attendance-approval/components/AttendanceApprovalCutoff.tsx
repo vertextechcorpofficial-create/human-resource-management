@@ -171,6 +171,14 @@ export function AttendanceApprovalCutoff() {
     return log.overtime_minutes || 0;
   };
 
+  const getEffectiveOvertimeMinutes = (log: AttendanceLogWithUser): number => {
+    const isApprovedOt = Boolean(log.ot_request && String(log.ot_request.status).toLowerCase() === "approved");
+    if (isApprovedOt && log.ot_request) {
+      return computeLogOvertimeMinutes(log);
+    }
+    return log.overtime_minutes || 0;
+  };
+
   const handleSaveRow = async (log: AttendanceLogWithUser) => {
     try {
       setIsProcessing(true);
@@ -444,7 +452,6 @@ export function AttendanceApprovalCutoff() {
       const requestedOtMinutes = getLogRequestedOtMinutes(log);
       const computedOtMinutes = computeLogOvertimeMinutes(log);
       const approvedOtMinutes = isApprovedOt ? computedOtMinutes : 0;
-
       const regMinutes = log.regular_minutes !== undefined && log.regular_minutes !== null
         ? log.regular_minutes
         : Math.max(0, (log.work_minutes || 0) - (log.night_diff_minutes || 0));
