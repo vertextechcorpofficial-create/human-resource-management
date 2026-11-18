@@ -64,6 +64,8 @@ export interface AttendanceLogWithUser extends AttendanceLog {
   user_mname: string | null;
   department_name: string | null;
   work_minutes: number;
+  regular_minutes?: number;
+  night_diff_minutes?: number;
   late_minutes: number;
   undertime_minutes: number;
   overtime_minutes: number;
@@ -82,6 +84,8 @@ export interface AttendanceApproval {
   approved_by: number;
   approved_at: string;
   work_minutes: number;
+  regular_minutes?: number;
+  night_diff_minutes?: number;
   late_minutes: number;
   undertime_minutes: number;
   overtime_minutes: number;
@@ -97,6 +101,8 @@ export interface ApprovalAction {
   remarks: string;
   // Minutes fields can be calculated on backend or passed if available
   work_minutes?: number;
+  regular_minutes?: number;
+  night_diff_minutes?: number;
   late_minutes?: number;
   undertime_minutes?: number;
   overtime_minutes?: number;
