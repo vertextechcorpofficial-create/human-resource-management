@@ -15,8 +15,6 @@ CREATE TABLE `attendance_approval` (
 	`approved_by` INT NOT NULL,
 	`approved_at` DATETIME NOT NULL DEFAULT (CURRENT_TIMESTAMP),
 	`work_minutes` INT NOT NULL DEFAULT '0',
-	`regular_minutes` INT NOT NULL DEFAULT '0',
-	`night_diff_minutes` INT NOT NULL DEFAULT '0',
 	`late_minutes` INT NOT NULL DEFAULT '0',
 	`undertime_minutes` INT NOT NULL DEFAULT '0',
 	`overtime_minutes` INT NOT NULL DEFAULT '0',
