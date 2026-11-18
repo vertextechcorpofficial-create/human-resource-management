@@ -12,6 +12,7 @@ import {
     ShieldCheck,
     Moon,
     Sun,
+    Trophy,
 } from "lucide-react"
 import { useTheme } from "next-themes"
 
@@ -39,7 +40,7 @@ type NavUserProps = {
         avatar?: string
     }
     /**
-     * Optional subsystem slug (e.g., "hrm", "scm"). 
+     * Optional subsystem slug (e.g., "hrm", "scm").
      * If not provided, it will be automatically detected from the URL.
      */
     subsystemSlug?: string
@@ -82,6 +83,13 @@ export function NavUser({ user, onLogout, subsystemSlug }: NavUserProps) {
         setLoggingOut(true)
 
         try {
+            try {
+                localStorage.removeItem("dealerover_salesman_ranking");
+                sessionStorage.removeItem("just_logged_in");
+            } catch {
+                // Ignore storage error
+            }
+
             // If a parent provided a handler, use it.
             if (onLogout) {
                 await Promise.resolve(onLogout())
@@ -153,7 +161,7 @@ export function NavUser({ user, onLogout, subsystemSlug }: NavUserProps) {
                                 </Link>
                             </DropdownMenuItem>
 
-                            <DropdownMenuItem 
+                            <DropdownMenuItem
                                 className="cursor-pointer"
                                 onSelect={(e) => {
                                     e.preventDefault()
@@ -171,7 +179,18 @@ export function NavUser({ user, onLogout, subsystemSlug }: NavUserProps) {
                                 </Link>
                             </DropdownMenuItem>
 
-                            <DropdownMenuItem asChild>
+                                                        <DropdownMenuItem
+                                className="cursor-pointer"
+                                onSelect={(e) => {
+                                    e.preventDefault()
+                                    window.dispatchEvent(new CustomEvent("open-dealerover-salesman-rankings"))
+                                }}
+                            >
+                                <Trophy className="mr-2 size-4 text-amber-500" />
+                                Salesman Rankings
+                            </DropdownMenuItem>
+
+<DropdownMenuItem asChild>
                                 <Link href={`/${currentSlug}/settings`} className="cursor-pointer">
                                     <Settings className="mr-2 size-4" />
                                     Settings
@@ -197,9 +216,9 @@ export function NavUser({ user, onLogout, subsystemSlug }: NavUserProps) {
                     </DropdownMenuContent>
                 </DropdownMenu>
             </SidebarMenuItem>
-            <ChangePasswordModal 
-                open={isPasswordModalOpen} 
-                onOpenChange={setIsPasswordModalOpen} 
+            <ChangePasswordModal
+                open={isPasswordModalOpen}
+                onOpenChange={setIsPasswordModalOpen}
             />
         </SidebarMenu>
     )

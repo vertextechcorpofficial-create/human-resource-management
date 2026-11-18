@@ -171,6 +171,14 @@ export function AttendanceApprovalCutoff() {
     return log.overtime_minutes || 0;
   };
 
+  const getEffectiveOvertimeMinutes = (log: AttendanceLogWithUser): number => {
+    const isApprovedOt = Boolean(log.ot_request && String(log.ot_request.status).toLowerCase() === "approved");
+    if (isApprovedOt && log.ot_request) {
+      return computeLogOvertimeMinutes(log);
+    }
+    return log.overtime_minutes || 0;
+  };
+
   const handleSaveRow = async (log: AttendanceLogWithUser) => {
     try {
       setIsProcessing(true);
