@@ -179,35 +179,35 @@ export function DailyDispatchPayrollTable() {
 
     if (error) {
         return (
-            <div className="p-8 text-center text-red-600 bg-red-50 rounded-lg">
+            <div className="p-8 text-center text-red-600 bg-red-500/10 rounded-lg">
                 <p>Error loading payroll data: {error}</p>
             </div>
         );
     }
 
     return (
-        <div className="rounded-md border bg-white shadow-sm">
+        <div className="rounded-md border bg-card shadow-sm">
             <Table>
-                <TableHeader className="bg-slate-50 sticky top-0 z-10">
+                <TableHeader className="bg-muted sticky top-0 z-10">
                     <TableRow>
                         <TableHead className="w-12"></TableHead>
-                        <TableHead className="font-semibold text-slate-700">Date / Dispatch</TableHead>
-                        <TableHead className="font-semibold text-slate-700">Details</TableHead>
-                        <TableHead className="font-semibold text-slate-700 text-right">Total Amount</TableHead>
-                        <TableHead className="font-semibold text-slate-700 text-center">Status</TableHead>
+                        <TableHead className="font-semibold text-foreground">Date / Dispatch</TableHead>
+                        <TableHead className="font-semibold text-foreground">Details</TableHead>
+                        <TableHead className="font-semibold text-foreground text-right">Total Amount</TableHead>
+                        <TableHead className="font-semibold text-foreground text-center">Status</TableHead>
                         <TableHead className="w-24"></TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                     {isLoading ? (
                         <TableRow>
-                            <TableCell colSpan={6} className="h-24 text-center text-slate-500">
+                            <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
                                 Loading logistics payroll data...
                             </TableCell>
                         </TableRow>
                     ) : groupedData.length === 0 ? (
                         <TableRow>
-                            <TableCell colSpan={6} className="h-24 text-center text-slate-500">
+                            <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
                                 <div className="flex flex-col items-center justify-center gap-2">
                                     <PackageSearch className="h-8 w-8 text-slate-300" />
                                     <span>No records found for this period.</span>
@@ -218,26 +218,26 @@ export function DailyDispatchPayrollTable() {
                         groupedData.map(dateGroup => (
                             <React.Fragment key={dateGroup.dateStr}>
                                 {/* Date Row */}
-                                <TableRow className="bg-slate-50 hover:bg-slate-100 cursor-pointer border-y-2 border-slate-200" onClick={() => toggleDate(dateGroup.dateStr)}>
+                                <TableRow className="bg-muted hover:bg-accent cursor-pointer border-y-2 border-border" onClick={() => toggleDate(dateGroup.dateStr)}>
                                     <TableCell>
-                                        {expandedDates[dateGroup.dateStr] ? <ChevronDown className="w-5 h-5 text-slate-500" /> : <ChevronRight className="w-5 h-5 text-slate-500" />}
+                                        {expandedDates[dateGroup.dateStr] ? <ChevronDown className="w-5 h-5 text-muted-foreground" /> : <ChevronRight className="w-5 h-5 text-muted-foreground" />}
                                     </TableCell>
-                                    <TableCell className="font-bold text-slate-900 text-base">
+                                    <TableCell className="font-bold text-foreground text-base">
                                         {dateGroup.dateStr}
                                     </TableCell>
-                                    <TableCell className="text-slate-600 text-sm">
+                                    <TableCell className="text-muted-foreground text-sm">
                                         {dateGroup.dispatchPlans.length} Dispatches
                                     </TableCell>
-                                    <TableCell className="font-bold text-slate-800 text-right">
+                                    <TableCell className="font-bold text-foreground text-right">
                                         ₱{dateGroup.totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                                     </TableCell>
                                     <TableCell className="text-center">
                                         {dateGroup.isFullyApproved ? (
-                                            <Badge variant="default" className="bg-green-100 text-green-700 hover:bg-green-200 border-green-200">
+                                            <Badge variant="default" className="bg-green-500/15 text-green-700 hover:bg-green-500/100/25 border-green-500/30">
                                                 <CheckCircle2 className="w-3 h-3 mr-1" /> Approved
                                             </Badge>
                                         ) : (
-                                            <Badge variant="outline" className="text-amber-600 border-amber-200 bg-amber-50">
+                                            <Badge variant="outline" className="text-amber-600 border-amber-500/30 bg-amber-500/10">
                                                 Pending
                                             </Badge>
                                         )}
@@ -248,11 +248,11 @@ export function DailyDispatchPayrollTable() {
                                 {/* Dispatches under Date */}
                                 {expandedDates[dateGroup.dateStr] && dateGroup.dispatchPlans.map(plan => (
                                     <React.Fragment key={plan.dispatchPlanId}>
-                                        <TableRow className="bg-white hover:bg-slate-50 cursor-pointer" onClick={() => setSelectedPlanForModal(plan)}>
+                                        <TableRow className="bg-card hover:bg-muted cursor-pointer" onClick={() => setSelectedPlanForModal(plan)}>
                                             <TableCell className="pl-8">
-                                                <ChevronRight className="w-4 h-4 text-slate-400" />
+                                                <ChevronRight className="w-4 h-4 text-muted-foreground" />
                                             </TableCell>
-                                            <TableCell className="font-semibold text-slate-800">
+                                            <TableCell className="font-semibold text-foreground">
                                                 {plan.dispatchDocNo.split('\n').map((docNo, i) => (
                                                     <div 
                                                         key={i}
@@ -272,7 +272,7 @@ export function DailyDispatchPayrollTable() {
                                                     <div className="mt-1">
                                                         <Badge 
                                                             variant="secondary" 
-                                                            className="hover:bg-slate-200 text-[10px]"
+                                                            className="hover:bg-accent text-[10px]"
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
                                                                 setSelectedPdpForModal({ pdpNo: plan.dispatchDocNo, dps: plan.linkedDispatchNos!, location: plan.location });
@@ -283,24 +283,24 @@ export function DailyDispatchPayrollTable() {
                                                     </div>
                                                 )}
                                             </TableCell>
-                                            <TableCell className="text-slate-600 text-xs">
+                                            <TableCell className="text-muted-foreground text-xs">
                                                 <div className="max-w-[300px] truncate" title={plan.location}>
                                                     {plan.location ? plan.location.replace(/\s*\([^)]+\)/g, '').trim() : "No Location"}
                                                 </div>
-                                                <div className="text-slate-400 mt-1">
+                                                <div className="text-muted-foreground mt-1">
                                                     {plan.vehiclePlate || "No Plate"} {plan.vehicleType ? `(${plan.vehicleType})` : ''} • {plan.staffList.length} Staff
                                                 </div>
                                             </TableCell>
-                                            <TableCell className="font-medium text-slate-700 text-right">
+                                            <TableCell className="font-medium text-foreground text-right">
                                                 ₱{plan.totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                                             </TableCell>
                                             <TableCell className="text-center">
                                                 {plan.isFullyApproved ? (
-                                                    <Badge variant="default" className="bg-green-50 text-green-600 hover:bg-green-100 border-green-200 text-[10px] h-5">
+                                                    <Badge variant="default" className="bg-green-500/10 text-green-600 hover:bg-green-500/100/25 border-green-500/30 text-[10px] h-5">
                                                         Approved
                                                     </Badge>
                                                 ) : (
-                                                    <Badge variant="outline" className="text-amber-500 border-amber-200 bg-amber-50 text-[10px] h-5">
+                                                    <Badge variant="outline" className="text-amber-500 border-amber-500/30 bg-amber-500/10 text-[10px] h-5">
                                                         Pending
                                                     </Badge>
                                                 )}
@@ -321,16 +321,16 @@ export function DailyDispatchPayrollTable() {
                         <DialogTitle>Linked Dispatch Plans</DialogTitle>
                     </DialogHeader>
                     <div className="py-4">
-                        <p className="text-sm text-slate-500 mb-4">
+                        <p className="text-sm text-muted-foreground mb-4">
                             The following Dispatch Plans (DP) are linked to <strong>{selectedPdpForModal?.pdpNo}</strong>:
                         </p>
                         <div className="max-h-[300px] overflow-y-auto pr-2">
                             <div className="flex flex-col gap-2">
                                 {selectedPdpForModal?.dps.split(',').map((dp, idx) => (
-                                    <div key={idx} className="bg-slate-50 border rounded p-3 text-sm font-medium text-slate-700 flex flex-col gap-1">
+                                    <div key={idx} className="bg-muted border rounded p-3 text-sm font-medium text-foreground flex flex-col gap-1">
                                         <div>{dp.trim()}</div>
                                         {selectedPdpForModal.location && (
-                                            <div className="text-xs text-slate-500 font-normal">
+                                            <div className="text-xs text-muted-foreground font-normal">
                                                 {selectedPdpForModal.location.replace(/\s*\([^)]+\)/g, '').trim()}
                                                 {selectedPdpForModal.location.match(/\(([^)]+)\)/) ? ` - ${selectedPdpForModal.location.match(/\(([^)]+)\)/)![1]}` : ''}
                                             </div>
@@ -350,15 +350,15 @@ export function DailyDispatchPayrollTable() {
                     </DialogHeader>
                     <div className="py-4">
                         <div className="mb-4">
-                            <h3 className="text-lg font-bold text-slate-800">
+                            <h3 className="text-lg font-bold text-foreground">
                                 {selectedPlanForModal?.dispatchDocNo.split('\n').map((d, i) => <div key={i}>{d}</div>)}
                             </h3>
-                            <p className="text-sm text-slate-500 mt-1">
+                            <p className="text-sm text-muted-foreground mt-1">
                                 {selectedPlanForModal?.location}
                             </p>
                             {selectedPlanForModal?.linkedDispatchNos && (
                                 <div className="mt-2 max-w-full overflow-x-auto">
-                                    <p className="text-xs font-medium text-indigo-600 bg-indigo-50 p-2 rounded border border-indigo-100 inline-block whitespace-pre-wrap break-words min-w-full">
+                                    <p className="text-xs font-medium text-indigo-600 bg-indigo-500/10 p-2 rounded border border-indigo-500/20 inline-block whitespace-pre-wrap break-words min-w-full">
                                         Linked DP: {selectedPlanForModal.linkedDispatchNos}
                                     </p>
                                 </div>
@@ -366,26 +366,26 @@ export function DailyDispatchPayrollTable() {
                         </div>
                         <div className="max-h-[400px] overflow-y-auto">
                             <Table>
-                                <TableHeader className="bg-slate-50 sticky top-0 z-10">
+                                <TableHeader className="bg-muted sticky top-0 z-10">
                                     <TableRow>
-                                        <TableHead className="font-semibold text-slate-700">Name</TableHead>
-                                        <TableHead className="font-semibold text-slate-700">Role</TableHead>
-                                        <TableHead className="font-semibold text-slate-700 text-right">Calculated Rate</TableHead>
-                                        <TableHead className="font-semibold text-slate-700 text-right w-32">Approved Amount</TableHead>
-                                        <TableHead className="font-semibold text-slate-700 text-center w-24">Action</TableHead>
+                                        <TableHead className="font-semibold text-foreground">Name</TableHead>
+                                        <TableHead className="font-semibold text-foreground">Role</TableHead>
+                                        <TableHead className="font-semibold text-foreground text-right">Calculated Rate</TableHead>
+                                        <TableHead className="font-semibold text-foreground text-right w-32">Approved Amount</TableHead>
+                                        <TableHead className="font-semibold text-foreground text-center w-24">Action</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {selectedPlanForModal?.staffList.map(staff => (
-                                        <TableRow key={`${staff.staffId}-${selectedPlanForModal.dispatchPlanId}`} className="hover:bg-slate-50/50">
-                                            <TableCell className="text-sm font-medium text-slate-800">
+                                        <TableRow key={`${staff.staffId}-${selectedPlanForModal.dispatchPlanId}`} className="hover:bg-muted/50">
+                                            <TableCell className="text-sm font-medium text-foreground">
                                                 {staff.staffName}
                                             </TableCell>
-                                            <TableCell className="text-sm text-slate-600">
+                                            <TableCell className="text-sm text-muted-foreground">
                                                 {staff.role}
                                             </TableCell>
                                             <TableCell className="text-right">
-                                                <span className="text-xs text-slate-400">
+                                                <span className="text-xs text-muted-foreground">
                                                     ₱{staff.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                                                 </span>
                                             </TableCell>
@@ -403,7 +403,7 @@ export function DailyDispatchPayrollTable() {
                                             </TableCell>
                                             <TableCell className="text-center">
                                                 {staff.isApproved ? (
-                                                    <Badge variant="outline" className="bg-green-50 text-green-600 border-transparent text-[10px] h-6 w-full justify-center">
+                                                    <Badge variant="outline" className="bg-green-500/10 text-green-600 border-transparent text-[10px] h-6 w-full justify-center">
                                                         Done
                                                     </Badge>
                                                 ) : (
@@ -431,3 +431,4 @@ export function DailyDispatchPayrollTable() {
         </div>
     );
 }
+

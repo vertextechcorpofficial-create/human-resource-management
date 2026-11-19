@@ -74,10 +74,10 @@ export function ManageLogisticsHeader({
   };
 
   return (
-    <div className="flex flex-col gap-4 items-start justify-between mb-6 p-4 bg-white rounded-lg shadow-sm border border-slate-200">
+    <div className="flex flex-col gap-4 items-start justify-between mb-6 p-4 bg-card rounded-lg shadow-sm border border-border">
         <div className="flex flex-wrap items-end gap-4 w-full">
             <div className="flex flex-col gap-2">
-                <span className="text-sm font-medium text-slate-700">Month</span>
+                <span className="text-sm font-medium text-foreground">Month</span>
                 <input 
                     type="month" 
                     value={selectedMonth}
@@ -87,7 +87,7 @@ export function ManageLogisticsHeader({
             </div>
 
             <div className="flex flex-col gap-2 min-w-[180px]">
-                <span className="text-sm font-medium text-slate-700">Cutoff Period</span>
+                <span className="text-sm font-medium text-foreground">Cutoff Period</span>
                 <Select value={selectedCutoff} onValueChange={(val: "11-25" | "26-10") => setSelectedCutoff(val)}>
                     <SelectTrigger className="h-10">
                         <SelectValue placeholder="Select Cutoff" />
@@ -103,7 +103,7 @@ export function ManageLogisticsHeader({
                 Apply Filter
             </Button>
             
-            <Button onClick={onAddManualDispatch} variant="outline" className="h-10 gap-2 border-slate-300 text-slate-700 hover:bg-slate-50">
+            <Button onClick={onAddManualDispatch} variant="outline" className="h-10 gap-2 border-border text-foreground hover:bg-muted">
                 <Plus className="h-4 w-4" /> Add PDP
             </Button>
         </div>
@@ -132,7 +132,7 @@ export function ManageLogisticsHeader({
             />
             <Input
                 type="date"
-                className="h-10 text-slate-500 w-[150px]"
+                className="h-10 text-muted-foreground w-[150px]"
                 title="Filter by Dispatch Date"
                 value={dispatchDateFilter}
                 onChange={(e) => setDispatchDateFilter(e.target.value)}

@@ -189,7 +189,7 @@ export function EditDispatchStaffDialog({
                 <div className="grid gap-6 py-4">
                     {/* Time of Dispatch */}
                     <div className="flex flex-col gap-2">
-                        <Label htmlFor="timeOfDispatch" className="font-semibold text-slate-700">Time of Dispatch</Label>
+                        <Label htmlFor="timeOfDispatch" className="font-semibold text-foreground">Time of Dispatch</Label>
                         <Input
                             id="timeOfDispatch"
                             type="datetime-local"
@@ -200,7 +200,7 @@ export function EditDispatchStaffDialog({
                     
                     {/* PDP No (Always show, but only editable for Extra PDP) */}
                     <div className="flex flex-col gap-2">
-                        <Label htmlFor="docNo" className="font-semibold text-slate-700">PDP No</Label>
+                        <Label htmlFor="docNo" className="font-semibold text-foreground">PDP No</Label>
                         <Input
                             id="docNo"
                             placeholder="e.g. PDP-2026-0001"
@@ -213,7 +213,7 @@ export function EditDispatchStaffDialog({
                     {/* Area (Only show if it's an Extra PDP) */}
                     {dispatchRecord.isExtra && (
                         <div className="flex flex-col gap-2">
-                            <Label htmlFor="area" className="font-semibold text-slate-700">Area</Label>
+                            <Label htmlFor="area" className="font-semibold text-foreground">Area</Label>
                             <Input
                                 id="area"
                                 placeholder="e.g. Metro Manila"
@@ -225,7 +225,7 @@ export function EditDispatchStaffDialog({
                     
                     {/* Vehicle Selection */}
                     <div className="flex flex-col gap-2">
-                        <Label htmlFor="vehicleId" className="font-semibold text-slate-700">Vehicle</Label>
+                        <Label htmlFor="vehicleId" className="font-semibold text-foreground">Vehicle</Label>
                         <SearchableSelect 
                             options={vehicleOptions}
                             value={vehicleId}
@@ -237,7 +237,7 @@ export function EditDispatchStaffDialog({
 
                     {/* Driver Selection */}
                     <div className="flex flex-col gap-2">
-                        <Label htmlFor="driverId" className="font-semibold text-slate-700">Driver</Label>
+                        <Label htmlFor="driverId" className="font-semibold text-foreground">Driver</Label>
                         <SearchableSelect 
                             options={driverOptions}
                             value={driverId}
@@ -250,14 +250,14 @@ export function EditDispatchStaffDialog({
                     {/* Helpers Selection */}
                     <div className="flex flex-col gap-3">
                         <div className="flex items-center justify-between">
-                            <Label className="font-semibold text-slate-700">Helpers</Label>
+                            <Label className="font-semibold text-foreground">Helpers</Label>
                             <Button variant="outline" size="sm" onClick={addHelper} className="h-8 gap-1">
                                 <PlusCircle className="h-4 w-4" /> Add Helper
                             </Button>
                         </div>
                         
                         {helperIds.length === 0 ? (
-                            <div className="text-sm text-slate-500 italic py-2">No helpers assigned.</div>
+                            <div className="text-sm text-muted-foreground italic py-2">No helpers assigned.</div>
                         ) : (
                             <div className="flex flex-col gap-2">
                                 {helperIds.map((hId, index) => (
@@ -270,7 +270,7 @@ export function EditDispatchStaffDialog({
                                             disabled={isLoadingUsers}
                                             placeholder="Select Helper"
                                         />
-                                        <Button variant="ghost" size="icon" onClick={() => removeHelper(index)} className="text-red-500 hover:text-red-700 hover:bg-red-50 shrink-0">
+                                        <Button variant="ghost" size="icon" onClick={() => removeHelper(index)} className="text-red-500 hover:text-red-700 hover:bg-red-500/100/25 shrink-0">
                                             <Trash2 className="h-4 w-4" />
                                         </Button>
                                     </div>
@@ -292,3 +292,4 @@ export function EditDispatchStaffDialog({
         </Dialog>
     );
 }
+

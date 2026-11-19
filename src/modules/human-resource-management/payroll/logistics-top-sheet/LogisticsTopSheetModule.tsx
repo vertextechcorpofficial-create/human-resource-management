@@ -33,8 +33,8 @@ export const LogisticsTopSheetModule = () => {
         <div className="flex flex-col gap-6 p-6">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-slate-900">Logistics Payroll Top Sheet</h1>
-                    <p className="text-sm text-slate-500">
+                    <h1 className="text-2xl font-bold tracking-tight text-foreground">Logistics Payroll Top Sheet</h1>
+                    <p className="text-sm text-muted-foreground">
                         View and print the payroll summary for Logistics staff (Drivers & Helpers) based on dispatch cuts.
                     </p>
                 </div>
@@ -52,10 +52,10 @@ export const LogisticsTopSheetModule = () => {
                 </div>
             </div>
 
-            <div className="p-4 bg-white border rounded-lg shadow-sm">
+            <div className="p-4 bg-card border rounded-lg shadow-sm">
                 <div className="flex flex-wrap items-end gap-4">
                     <div className="space-y-1.5 flex-1 min-w-[200px] max-w-[250px]">
-                        <Label htmlFor="cutoffStart" className="text-sm font-medium text-slate-700">Cutoff Start</Label>
+                        <Label htmlFor="cutoffStart" className="text-sm font-medium text-foreground">Cutoff Start</Label>
                         <Input 
                             id="cutoffStart" 
                             type="date" 
@@ -64,7 +64,7 @@ export const LogisticsTopSheetModule = () => {
                         />
                     </div>
                     <div className="space-y-1.5 flex-1 min-w-[200px] max-w-[250px]">
-                        <Label htmlFor="cutoffEnd" className="text-sm font-medium text-slate-700">Cutoff End</Label>
+                        <Label htmlFor="cutoffEnd" className="text-sm font-medium text-foreground">Cutoff End</Label>
                         <Input 
                             id="cutoffEnd" 
                             type="date" 
@@ -84,7 +84,7 @@ export const LogisticsTopSheetModule = () => {
             </div>
 
             {error && (
-                <div className="p-4 bg-red-50 text-red-600 border border-red-200 rounded-md text-sm">
+                <div className="p-4 bg-red-500/10 text-red-600 border border-red-500/30 rounded-md text-sm">
                     {error}
                 </div>
             )}
@@ -93,3 +93,4 @@ export const LogisticsTopSheetModule = () => {
         </div>
     );
 };
+

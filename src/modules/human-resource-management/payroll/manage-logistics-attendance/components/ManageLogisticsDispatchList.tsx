@@ -27,30 +27,30 @@ export function ManageLogisticsDispatchList({
   const [editingRecord, setEditingRecord] = useState<DispatchAttendance | null>(null);
 
   return (
-    <div className="rounded-md border bg-white overflow-hidden">
+    <div className="rounded-md border bg-card overflow-hidden">
       <Table>
-        <TableHeader className="bg-slate-50">
+        <TableHeader className="bg-muted">
           <TableRow>
-            <TableHead className="font-semibold text-slate-700 text-xs">PDP No</TableHead>
-            <TableHead className="font-semibold text-slate-700 text-xs">Location</TableHead>
-            <TableHead className="font-semibold text-slate-700 text-xs">Area</TableHead>
-            <TableHead className="font-semibold text-slate-700 text-xs">Vehicle Type</TableHead>
-            <TableHead className="font-semibold text-slate-700 text-xs">Driver ID</TableHead>
-            <TableHead className="font-semibold text-slate-700 text-xs">Helpers</TableHead>
-            <TableHead className="font-semibold text-slate-700 text-xs">Time of Dispatch</TableHead>
-            <TableHead className="text-right font-semibold text-slate-700 text-xs">Action</TableHead>
+            <TableHead className="font-semibold text-foreground text-xs">PDP No</TableHead>
+            <TableHead className="font-semibold text-foreground text-xs">Location</TableHead>
+            <TableHead className="font-semibold text-foreground text-xs">Area</TableHead>
+            <TableHead className="font-semibold text-foreground text-xs">Vehicle Type</TableHead>
+            <TableHead className="font-semibold text-foreground text-xs">Driver ID</TableHead>
+            <TableHead className="font-semibold text-foreground text-xs">Helpers</TableHead>
+            <TableHead className="font-semibold text-foreground text-xs">Time of Dispatch</TableHead>
+            <TableHead className="text-right font-semibold text-foreground text-xs">Action</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {isLoading ? (
             <TableRow>
-              <TableCell colSpan={8} className="h-24 text-center text-slate-500">
+              <TableCell colSpan={8} className="h-24 text-center text-muted-foreground">
                 Loading dispatches...
               </TableCell>
             </TableRow>
           ) : dispatches.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={8} className="h-24 text-center text-slate-500">
+              <TableCell colSpan={8} className="h-24 text-center text-muted-foreground">
                 No dispatch plans found.
               </TableCell>
             </TableRow>
@@ -62,23 +62,23 @@ export function ManageLogisticsDispatchList({
                 : "-";
               
               return (
-              <TableRow key={record.dispatchPlanId} className={`hover:bg-slate-50/50 ${record.isNotPayroll ? 'bg-red-50/50 hover:bg-red-100/50' : ''}`}>
-                <TableCell className="font-medium text-slate-900 text-sm align-top">
+              <TableRow key={record.dispatchPlanId} className={`hover:bg-muted/50 ${record.isNotPayroll ? 'bg-red-500/10 hover:bg-red-500/10' : ''}`}>
+                <TableCell className="font-medium text-foreground text-sm align-top">
                   {record.dispatchDocNo || `PDP-${record.dispatchPlanId}`}
                 </TableCell>
-                <TableCell className="text-slate-600 text-sm align-top max-w-[250px] whitespace-normal break-words">
+                <TableCell className="text-muted-foreground text-sm align-top max-w-[250px] whitespace-normal break-words">
                   {[record.brgy, record.city, record.province].filter(Boolean).join(", ") || "-"}
                 </TableCell>
-                <TableCell className="text-slate-600 text-sm align-top max-w-[200px] whitespace-normal break-words">
+                <TableCell className="text-muted-foreground text-sm align-top max-w-[200px] whitespace-normal break-words">
                   {area}
                 </TableCell>
-                <TableCell className="text-slate-600 text-sm align-top">
+                <TableCell className="text-muted-foreground text-sm align-top">
                   {record.vehicleType || "Unknown"}
                 </TableCell>
-                <TableCell className="text-slate-600 text-sm align-top">
+                <TableCell className="text-muted-foreground text-sm align-top">
                   {record.driverName || record.driverId || "Unassigned"}
                 </TableCell>
-                <TableCell className="text-slate-600 text-sm align-top">
+                <TableCell className="text-muted-foreground text-sm align-top">
                   {record.staff && record.staff.length > 0 ? (
                     <ul className="list-disc pl-4">
                         {record.staff.map((s, idx) => (
@@ -89,7 +89,7 @@ export function ManageLogisticsDispatchList({
                     "No helpers"
                   )}
                 </TableCell>
-                <TableCell className="text-slate-600 text-sm align-top">
+                <TableCell className="text-muted-foreground text-sm align-top">
                     {record.timeOfDispatch ? new Date(record.timeOfDispatch).toLocaleString() : "-"}
                 </TableCell>
                 <TableCell className="text-right text-sm align-top">
@@ -100,7 +100,7 @@ export function ManageLogisticsDispatchList({
                     <Button 
                       variant="ghost" 
                       size="sm" 
-                      className={record.isNotPayroll ? "text-green-600 hover:text-green-700 hover:bg-green-50" : "text-red-600 hover:text-red-700 hover:bg-red-50"}
+                      className={record.isNotPayroll ? "text-green-600 hover:text-green-700 hover:bg-green-500/100/25" : "text-red-600 hover:text-red-700 hover:bg-red-500/100/25"}
                       onClick={() => onUpdateStaff({
                         dispatchPlanId: record.dispatchPlanId as number,
                         isExtra: record.isExtra,
@@ -133,3 +133,4 @@ export function ManageLogisticsDispatchList({
     </div>
   );
 }
+

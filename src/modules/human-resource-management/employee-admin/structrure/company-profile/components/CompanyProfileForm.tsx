@@ -133,18 +133,18 @@ export function CompanyProfileForm({ onCancel }: CompanyProfileFormProps) {
                             variant="ghost"
                             size="sm"
                             onClick={onCancel}
-                            className="text-slate-500 hover:text-slate-900"
+                            className="text-muted-foreground hover:text-foreground"
                         >
                             <ArrowLeft className="w-4 h-4 mr-2" />
                             Back
                         </Button>
-                        <h1 className="text-2xl font-bold tracking-tight text-slate-900">Edit Company Profile</h1>
+                        <h1 className="text-2xl font-bold tracking-tight text-foreground">Edit Company Profile</h1>
                     </div>
                 </div>
 
                 {/* Tabbed Interface */}
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                    <TabsList className="grid w-full grid-cols-5 bg-slate-100/50 p-1 rounded-xl h-auto mb-6 group-data-[orientation=horizontal]/tabs:h-auto">
+                    <TabsList className="grid w-full grid-cols-5 bg-muted/50 p-1 rounded-xl h-auto mb-6 group-data-[orientation=horizontal]/tabs:h-auto">
                         <TabTrigger value="basic" icon={<Building2 className="w-4 h-4" />} label="Basic" />
                         <TabTrigger value="registration" icon={<FileText className="w-4 h-4" />} label="Registration" />
                         <TabTrigger value="address" icon={<MapPin className="w-4 h-4" />} label="Address" />
@@ -155,11 +155,11 @@ export function CompanyProfileForm({ onCancel }: CompanyProfileFormProps) {
                     <div className="min-h-[400px]">
                         {/* Basic Info Tab */}
                         <TabsContent value="basic" className="mt-0 focus-visible:outline-none focus-visible:ring-0">
-                            <Card className="border-none shadow-sm bg-white overflow-hidden">
+                            <Card className="border-none shadow-sm bg-card overflow-hidden">
                                 <CardContent className="p-8 space-y-6">
                                     <div className="flex items-center gap-2 pb-2 border-b border-slate-50">
                                         <Building2 className="w-5 h-5 text-indigo-500" />
-                                        <h3 className="text-lg font-semibold text-slate-800">Basic Information</h3>
+                                        <h3 className="text-lg font-semibold text-foreground">Basic Information</h3>
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <FormFieldControl form={form} name="company_name" label="Company Name *" placeholder="e.g. TechVision Solutions Inc." />
@@ -168,10 +168,10 @@ export function CompanyProfileForm({ onCancel }: CompanyProfileFormProps) {
                                         <FormFieldControl form={form} name="company_department" label="Department" placeholder="e.g. Information Technology" />
 
                                         <div className="md:col-span-2 space-y-4">
-                                            <FormLabel className="text-sm font-semibold text-slate-700">Company Logo</FormLabel>
-                                            <div className="flex items-center gap-6 p-4 rounded-xl border-2 border-dashed border-slate-200 bg-slate-50/30 hover:bg-slate-50/50 transition-all">
+                                            <FormLabel className="text-sm font-semibold text-foreground">Company Logo</FormLabel>
+                                            <div className="flex items-center gap-6 p-4 rounded-xl border-2 border-dashed border-border bg-muted/30 hover:bg-muted/50 transition-all">
                                                 <div className="relative group shrink-0">
-                                                    <div className="w-24 h-24 rounded-lg overflow-hidden bg-white flex items-center justify-center border border-slate-100 shadow-sm relative">
+                                                    <div className="w-24 h-24 rounded-lg overflow-hidden bg-card flex items-center justify-center border border-border shadow-sm relative">
                                                         {form.watch("company_logo") ? (
                                                             // eslint-disable-next-line @next/next/no-img-element
                                                             <img
@@ -183,14 +183,14 @@ export function CompanyProfileForm({ onCancel }: CompanyProfileFormProps) {
                                                             <Building2 className="w-10 h-10 text-slate-200" />
                                                         )}
                                                         {isUploading && (
-                                                            <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px] flex items-center justify-center">
+                                                            <div className="absolute inset-0 bg-card/60 backdrop-blur-[1px] flex items-center justify-center">
                                                                 <Loader2 className="w-6 h-6 text-indigo-500 animate-spin" />
                                                             </div>
                                                         )}
                                                     </div>
                                                 </div>
                                                 <div className="flex-1 space-y-2">
-                                                    <p className="text-sm text-slate-500">
+                                                    <p className="text-sm text-muted-foreground">
                                                         Recommended size: 512x512px. Max size: 5MB.
                                                     </p>
                                                     <div className="flex gap-2">
@@ -212,7 +212,7 @@ export function CompanyProfileForm({ onCancel }: CompanyProfileFormProps) {
                                                                 size="sm"
                                                                 disabled={isUploading}
                                                                 onClick={() => form.setValue("company_logo", null)}
-                                                                className="h-9 text-red-500 hover:text-red-600 hover:bg-red-50"
+                                                                className="h-9 text-red-500 hover:text-red-600 hover:bg-red-500/100/25"
                                                             >
                                                                 <X className="w-4 h-4 mr-2" />
                                                                 Remove
@@ -246,11 +246,11 @@ export function CompanyProfileForm({ onCancel }: CompanyProfileFormProps) {
 
                         {/* Registration Tab */}
                         <TabsContent value="registration" className="mt-0 focus-visible:outline-none focus-visible:ring-0">
-                            <Card className="border-none shadow-sm bg-white overflow-hidden">
+                            <Card className="border-none shadow-sm bg-card overflow-hidden">
                                 <CardContent className="p-8 space-y-6">
                                     <div className="flex items-center gap-2 pb-2 border-b border-slate-50">
                                         <FileText className="w-5 h-5 text-orange-500" />
-                                        <h3 className="text-lg font-semibold text-slate-800">Registration Details</h3>
+                                        <h3 className="text-lg font-semibold text-foreground">Registration Details</h3>
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <FormFieldControl form={form} name="company_registrationNumber" label="Registration Number" placeholder="e.g. CS201234567" />
@@ -263,11 +263,11 @@ export function CompanyProfileForm({ onCancel }: CompanyProfileFormProps) {
 
                         {/* Address Tab */}
                         <TabsContent value="address" className="mt-0 focus-visible:outline-none focus-visible:ring-0">
-                            <Card className="border-none shadow-sm bg-white overflow-hidden">
+                            <Card className="border-none shadow-sm bg-card overflow-hidden">
                                 <CardContent className="p-8 space-y-6">
                                     <div className="flex items-center gap-2 pb-2 border-b border-slate-50">
                                         <MapPin className="w-5 h-5 text-red-500" />
-                                        <h3 className="text-lg font-semibold text-slate-800">Address Information</h3>
+                                        <h3 className="text-lg font-semibold text-foreground">Address Information</h3>
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                         <FormFieldControl form={form} name="company_address" label="Street Address" placeholder="123 Main Street" className="md:col-span-3" />
@@ -282,11 +282,11 @@ export function CompanyProfileForm({ onCancel }: CompanyProfileFormProps) {
 
                         {/* Contact Tab */}
                         <TabsContent value="contact" className="mt-0 focus-visible:outline-none focus-visible:ring-0">
-                            <Card className="border-none shadow-sm bg-white overflow-hidden">
+                            <Card className="border-none shadow-sm bg-card overflow-hidden">
                                 <CardContent className="p-8 space-y-6">
                                     <div className="flex items-center gap-2 pb-2 border-b border-slate-50">
                                         <Phone className="w-5 h-5 text-green-500" />
-                                        <h3 className="text-lg font-semibold text-slate-800">Contact Information</h3>
+                                        <h3 className="text-lg font-semibold text-foreground">Contact Information</h3>
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <FormFieldControl form={form} name="company_contact" label="Contact Number" placeholder="+63 (02) 1234-5678" />
@@ -300,11 +300,11 @@ export function CompanyProfileForm({ onCancel }: CompanyProfileFormProps) {
 
                         {/* Online Tab */}
                         <TabsContent value="online" className="mt-0 focus-visible:outline-none focus-visible:ring-0">
-                            <Card className="border-none shadow-sm bg-white overflow-hidden">
+                            <Card className="border-none shadow-sm bg-card overflow-hidden">
                                 <CardContent className="p-8 space-y-6">
                                     <div className="flex items-center gap-2 pb-2 border-b border-slate-50">
                                         <Globe className="w-5 h-5 text-blue-500" />
-                                        <h3 className="text-lg font-semibold text-slate-800">Online Presence</h3>
+                                        <h3 className="text-lg font-semibold text-foreground">Online Presence</h3>
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <FormFieldControl form={form} name="company_website" label="Website" placeholder="https://www.company.com" />
@@ -317,7 +317,7 @@ export function CompanyProfileForm({ onCancel }: CompanyProfileFormProps) {
                 </Tabs>
 
                 {/* Footer actions */}
-                <div className="flex items-center justify-end gap-3 pt-6 border-t border-slate-100">
+                <div className="flex items-center justify-end gap-3 pt-6 border-t border-border">
                     <Button
                         type="button"
                         variant="outline"
@@ -344,7 +344,7 @@ function TabTrigger({ value, icon, label }: { value: string; icon: React.ReactNo
     return (
         <TabsTrigger
             value={value}
-            className="data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm rounded-lg py-2.5 transition-all flex items-center gap-2 text-base data-[state=active]:bg-primary data-[state=active]:font-semibold data-[state=active]:text-primary-foreground dark:data-[state=active]:bg-primary dark:data-[state=active]:border-transparent dark:data-[state=active]:text-primary-foreground"
+            className="data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:shadow-sm rounded-lg py-2.5 transition-all flex items-center gap-2 text-base data-[state=active]:bg-primary data-[state=active]:font-semibold data-[state=active]:text-primary-foreground dark:data-[state=active]:bg-primary dark:data-[state=active]:border-transparent dark:data-[state=active]:text-primary-foreground"
         >
             {icon}
             <span className="hidden sm:inline font-medium">{label}</span>
@@ -373,13 +373,13 @@ function FormFieldControl({
             name={name}
             render={({ field }) => (
                 <FormItem className={className}>
-                    <FormLabel className="text-sm font-semibold text-slate-700">{label}</FormLabel>
+                    <FormLabel className="text-sm font-semibold text-foreground">{label}</FormLabel>
                     <FormControl>
                         {type === "textarea" ? (
                             <Textarea
                                 {...field}
                                 placeholder={placeholder}
-                                className="bg-slate-50/50 border-slate-200 focus:bg-white transition-all min-h-[100px]"
+                                className="bg-muted/50 border-border focus:bg-card transition-all min-h-[100px]"
                                 value={field.value || ""}
                             />
                         ) : (
@@ -387,7 +387,7 @@ function FormFieldControl({
                                 {...field}
                                 type={type}
                                 placeholder={placeholder}
-                                className="bg-slate-50/50 border-slate-200 focus:bg-white transition-all h-11"
+                                className="bg-muted/50 border-border focus:bg-card transition-all h-11"
                                 value={field.value || ""}
                             />
                         )}
@@ -398,3 +398,4 @@ function FormFieldControl({
         />
     );
 }
+

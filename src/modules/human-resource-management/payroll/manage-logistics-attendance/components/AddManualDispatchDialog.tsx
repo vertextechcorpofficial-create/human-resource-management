@@ -150,14 +150,14 @@ export function AddManualDispatchDialog({
                 
                 <div className="grid gap-6 py-4">
                     {error && (
-                        <div className="p-3 bg-red-50 text-red-600 rounded-md border border-red-200 shadow-sm text-sm font-medium">
+                        <div className="p-3 bg-red-500/10 text-red-600 rounded-md border border-red-500/30 shadow-sm text-sm font-medium">
                             {error}
                         </div>
                     )}
 
                     {/* PDP Document No */}
                     <div className="flex flex-col gap-2">
-                        <Label htmlFor="docNo" className="font-semibold text-slate-700">PDP No <span className="text-red-500">*</span></Label>
+                        <Label htmlFor="docNo" className="font-semibold text-foreground">PDP No <span className="text-red-500">*</span></Label>
                         <Input
                             id="docNo"
                             placeholder="e.g. PDP-2026-0001"
@@ -168,7 +168,7 @@ export function AddManualDispatchDialog({
 
                     {/* Area */}
                     <div className="flex flex-col gap-2">
-                        <Label htmlFor="area" className="font-semibold text-slate-700">Area <span className="text-muted-foreground font-normal">(Optional)</span></Label>
+                        <Label htmlFor="area" className="font-semibold text-foreground">Area <span className="text-muted-foreground font-normal">(Optional)</span></Label>
                         <Input
                             id="area"
                             placeholder="e.g. Metro Manila"
@@ -179,7 +179,7 @@ export function AddManualDispatchDialog({
 
                     {/* Time of Dispatch */}
                     <div className="flex flex-col gap-2">
-                        <Label htmlFor="timeOfDispatch" className="font-semibold text-slate-700">Time of Dispatch <span className="text-red-500">*</span></Label>
+                        <Label htmlFor="timeOfDispatch" className="font-semibold text-foreground">Time of Dispatch <span className="text-red-500">*</span></Label>
                         <Input
                             id="timeOfDispatch"
                             type="datetime-local"
@@ -190,7 +190,7 @@ export function AddManualDispatchDialog({
                     
                     {/* Vehicle Selection */}
                     <div className="flex flex-col gap-2">
-                        <Label htmlFor="vehicleId" className="font-semibold text-slate-700">Vehicle</Label>
+                        <Label htmlFor="vehicleId" className="font-semibold text-foreground">Vehicle</Label>
                         <Select value={vehicleId} onValueChange={setVehicleId} disabled={isLoadingVehicles}>
                             <SelectTrigger id="vehicleId">
                                 <SelectValue placeholder={isLoadingVehicles ? "Loading vehicles..." : "Select Vehicle"} />
@@ -208,7 +208,7 @@ export function AddManualDispatchDialog({
 
                     {/* Driver Selection */}
                     <div className="flex flex-col gap-2">
-                        <Label htmlFor="driverId" className="font-semibold text-slate-700">Driver</Label>
+                        <Label htmlFor="driverId" className="font-semibold text-foreground">Driver</Label>
                         <Select value={driverId} onValueChange={setDriverId} disabled={isLoadingUsers}>
                             <SelectTrigger id="driverId">
                                 <SelectValue placeholder={isLoadingUsers ? "Loading users..." : "Select Driver"} />
@@ -227,14 +227,14 @@ export function AddManualDispatchDialog({
                     {/* Helpers Selection */}
                     <div className="flex flex-col gap-3">
                         <div className="flex items-center justify-between">
-                            <Label className="font-semibold text-slate-700">Helpers</Label>
+                            <Label className="font-semibold text-foreground">Helpers</Label>
                             <Button variant="outline" size="sm" onClick={addHelper} className="h-8 gap-1">
                                 <PlusCircle className="h-4 w-4" /> Add Helper
                             </Button>
                         </div>
                         
                         {helperIds.length === 0 ? (
-                            <div className="text-sm text-slate-500 italic py-2">No helpers assigned.</div>
+                            <div className="text-sm text-muted-foreground italic py-2">No helpers assigned.</div>
                         ) : (
                             <div className="flex flex-col gap-2">
                                 {helperIds.map((hId, index) => (
@@ -252,7 +252,7 @@ export function AddManualDispatchDialog({
                                                 ))}
                                             </SelectContent>
                                         </Select>
-                                        <Button variant="ghost" size="icon" onClick={() => removeHelper(index)} className="text-red-500 hover:text-red-700 hover:bg-red-50 shrink-0">
+                                        <Button variant="ghost" size="icon" onClick={() => removeHelper(index)} className="text-red-500 hover:text-red-700 hover:bg-red-500/100/25 shrink-0">
                                             <Trash2 className="h-4 w-4" />
                                         </Button>
                                     </div>
@@ -274,3 +274,4 @@ export function AddManualDispatchDialog({
         </Dialog>
     );
 }
+

@@ -39,14 +39,14 @@ export function ManageLogisticsAttendanceModule() {
   return (
     <div className="flex flex-col gap-6 mx-auto max-w-screen-2xl">
       <div className="flex flex-col gap-1.5">
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900">Manage Logistics Attendance</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">Manage Logistics Attendance</h1>
         <p className="text-muted-foreground text-sm">
           Review and update driver and helper assignments for logistics dispatch plans across cutoff periods.
         </p>
       </div>
 
       {error && (
-        <div className="p-4 bg-red-50 text-red-600 rounded-md border border-red-200 shadow-sm text-sm font-medium">
+        <div className="p-4 bg-red-500/10 text-red-600 rounded-md border border-red-500/30 shadow-sm text-sm font-medium">
             {error}
         </div>
       )}
@@ -69,9 +69,9 @@ export function ManageLogisticsAttendanceModule() {
         onAddManualDispatch={() => setIsAddDialogOpen(true)}
       />
 
-      <Card className="border-slate-200 shadow-sm">
-        <CardHeader className="bg-slate-50/50 border-b border-slate-100 pb-4">
-            <CardTitle className="text-lg text-slate-800">Dispatch Records</CardTitle>
+      <Card className="border-border shadow-sm">
+        <CardHeader className="bg-muted/50 border-b border-border pb-4">
+            <CardTitle className="text-lg text-foreground">Dispatch Records</CardTitle>
             <CardDescription>All dispatches matching the current cutoff criteria.</CardDescription>
         </CardHeader>
         <CardContent className="p-0">
@@ -81,8 +81,8 @@ export function ManageLogisticsAttendanceModule() {
                 onUpdateStaff={updateDispatchStaff}
             />
             
-            <div className="flex items-center justify-between p-4 border-t border-slate-100 bg-slate-50/30">
-                <div className="text-sm font-medium text-slate-500">
+            <div className="flex items-center justify-between p-4 border-t border-border bg-muted/30">
+                <div className="text-sm font-medium text-muted-foreground">
                     Page {currentPage} of {totalPages}
                 </div>
                 <div className="flex items-center gap-2">
@@ -117,3 +117,4 @@ export function ManageLogisticsAttendanceModule() {
     </div>
   );
 }
+
