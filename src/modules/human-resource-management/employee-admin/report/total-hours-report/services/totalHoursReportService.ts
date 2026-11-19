@@ -286,7 +286,7 @@ export async function fetchTotalHoursReport(params: TotalHoursServiceParams) {
   }
 
   const approvalFields =
-    "approval_id,employee_id,date_schedule,approved_by,approved_at,work_minutes,late_minutes,undertime_minutes,overtime_minutes,remarks,status";
+    "approval_id,employee_id,date_schedule,approved_by,approved_at,work_minutes,regular_minutes,night_diff_minutes,late_minutes,undertime_minutes,overtime_minutes,remarks,status";
   const logFields = "user_id,log_date,time_in,time_out";
 
   const approvalQuery = `?${approvalFilterParts.join("&")}${
@@ -310,6 +310,8 @@ export async function fetchTotalHoursReport(params: TotalHoursServiceParams) {
     approved_by: number;
     approved_at: string;
     work_minutes: number;
+    regular_minutes?: number;
+    night_diff_minutes?: number;
     late_minutes: number;
     undertime_minutes: number;
     overtime_minutes: number;
@@ -405,6 +407,8 @@ export async function fetchTotalHoursReport(params: TotalHoursServiceParams) {
 
       // Strictly from attendance_approval:
       work_minutes,
+      regular_minutes: Number(approval.regular_minutes ?? Math.max(0, work_minutes - Number(approval.night_diff_minutes ?? 0))),
+      night_diff_minutes: Number(approval.night_diff_minutes ?? 0),
       late_minutes,
       undertime_minutes,
       overtime_minutes,

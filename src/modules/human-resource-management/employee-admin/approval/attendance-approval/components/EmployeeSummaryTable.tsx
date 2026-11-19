@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Eye, ChevronRight, ClipboardList, Timer, Clock, Calendar } from "lucide-react";
+import { Eye, ChevronRight, ClipboardList, Timer, Clock, Calendar, Moon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { EmptyState } from "./EmptyState";
 
@@ -21,6 +21,8 @@ export interface EmployeeSummary {
   user_lname: string;
   department_name: string | null;
   total_work_minutes: number;
+  total_regular_minutes?: number;
+  total_night_diff_minutes?: number;
   total_late_minutes: number;
   total_undertime_minutes: number;
   total_overtime_minutes: number;
@@ -75,6 +77,8 @@ export function EmployeeSummaryTable({
             <TableHead className="h-14 px-6 font-bold text-muted-foreground uppercase tracking-widest text-[10px]">Employee</TableHead>
             <TableHead className="h-14 px-6 font-bold text-muted-foreground uppercase tracking-widest text-[10px] text-center">Days</TableHead>
             <TableHead className="h-14 px-6 font-bold text-muted-foreground uppercase tracking-widest text-[10px] text-center">Work (Total)</TableHead>
+            <TableHead className="h-14 px-6 font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest text-[10px] text-center">Reg Hr (Total)</TableHead>
+            <TableHead className="h-14 px-6 font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest text-[10px] text-center">Night Diff (Total)</TableHead>
             <TableHead className="h-14 px-6 font-bold text-muted-foreground uppercase tracking-widest text-[10px] text-center">Late (Total)</TableHead>
             <TableHead className="h-14 px-6 font-bold text-muted-foreground uppercase tracking-widest text-[10px] text-center">Undertime</TableHead>
             <TableHead className="h-14 px-6 font-bold text-muted-foreground uppercase tracking-widest text-[10px] text-center">Overtime</TableHead>
@@ -151,6 +155,17 @@ export function EmployeeSummaryTable({
                         Leave: {summary.total_leave_days || 0}d
                       </Badge>
 
+                      {/* Night Differential Summary Badge */}
+                      {(summary.total_night_diff_minutes || 0) > 0 && (
+                        <Badge
+                          variant="outline"
+                          className="text-[9px] font-bold px-1.5 py-0 h-4.5 gap-1 shadow-xs transition-colors whitespace-nowrap bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/30"
+                          title={`Total Night Differential: ${summary.total_night_diff_minutes || 0} minutes (${((summary.total_night_diff_minutes || 0) / 60).toFixed(1)} hrs)`}
+                        >
+                          <Moon className="h-2.5 w-2.5 opacity-80" />
+                          ND: {summary.total_night_diff_minutes || 0}m
+                        </Badge>
+                      )}
                       {/* Pending Notifications */}
                       {(summary.pending_ot_count || 0) > 0 && (
                         <Badge variant="outline" className="text-[9px] font-bold px-1.5 py-0 h-4.5 bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/40 whitespace-nowrap">
@@ -181,7 +196,37 @@ export function EmployeeSummaryTable({
               <TableCell className="px-6 py-4 text-center">
                 <div className="flex flex-col items-center">
                   <span className="text-sm font-bold text-foreground">{summary.total_work_minutes}</span>
-                  <span className="text-[9px] text-muted-foreground uppercase font-bold tracking-tighter">mins</span>
+                  <span className="text-[9px] text-muted-foreground uppercase font-bold tracking-tighter">
+                    {summary.total_work_minutes > 0 ? `${(summary.total_work_minutes / 60).toFixed(1)}h` : "mins"}
+                  </span>
+                </div>
+              </TableCell>
+
+              <TableCell className="px-6 py-4 text-center">
+                <div className="flex flex-col items-center">
+                  <span className={cn(
+                    "text-sm font-bold",
+                    (summary.total_regular_minutes || 0) > 0 ? "text-blue-600 dark:text-blue-400 font-extrabold" : "text-muted-foreground/40"
+                  )}>
+                    {summary.total_regular_minutes || 0}
+                  </span>
+                  <span className="text-[9px] text-muted-foreground uppercase font-bold tracking-tighter">
+                    {(summary.total_regular_minutes || 0) > 0 ? `${((summary.total_regular_minutes || 0) / 60).toFixed(1)}h` : "mins"}
+                  </span>
+                </div>
+              </TableCell>
+
+              <TableCell className="px-6 py-4 text-center">
+                <div className="flex flex-col items-center">
+                  <span className={cn(
+                    "text-sm font-bold",
+                    (summary.total_night_diff_minutes || 0) > 0 ? "text-indigo-600 dark:text-indigo-400 font-extrabold" : "text-muted-foreground/40"
+                  )}>
+                    {summary.total_night_diff_minutes || 0}
+                  </span>
+                  <span className="text-[9px] text-muted-foreground uppercase font-bold tracking-tighter">
+                    {(summary.total_night_diff_minutes || 0) > 0 ? `${((summary.total_night_diff_minutes || 0) / 60).toFixed(1)}h` : "mins"}
+                  </span>
                 </div>
               </TableCell>
 
