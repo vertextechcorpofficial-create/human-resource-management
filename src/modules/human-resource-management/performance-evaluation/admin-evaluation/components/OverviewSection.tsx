@@ -50,7 +50,6 @@ const STAGE_LABELS: Record<WorkflowStage, string> = {
     first_evaluation: "1st evaluation",
     pip_1: "PIP",
     second_evaluation: "2nd evaluation",
-    third_evaluation: "3rd evaluation",
     recommendation: "Recommendation",
     regularization: "Regularization",
     termination_review: "Termination review",
@@ -86,19 +85,19 @@ function dueBadgeFor(due: string, relevant: boolean) {
     return null;
 }
 
-type DueKey = "day30" | "day60" | "day90" | "sixth";
+type DueKey = "first" | "second" | "sixth";
 
 function pipDueKey(facts: WorkflowFacts): DueKey {
     const openPip = facts.pips.find((pip) => pip.status === "open") ?? facts.pips[0] ?? null;
-    if (openPip?.evalType === "second") return "day60";
-    if (openPip?.evalType === "third") return "day90";
-    if (openPip !== null) return "day30";
+    if (openPip?.evalType === "second") return "second";
+    if (openPip?.evalType === "third") return "sixth";
+    if (openPip !== null) return "first";
     const failed = facts.evaluations.find(
         (entry) => entry.voidedAt === null && entry.result === "failed",
     );
-    if (failed?.evalType === "second") return "day60";
-    if (failed?.evalType === "third") return "day90";
-    return "day30";
+    if (failed?.evalType === "second") return "second";
+    if (failed?.evalType === "third") return "sixth";
+    return "first";
 }
 
 function DueRow({
@@ -138,14 +137,12 @@ export function WorkspaceHero({
     const dueDates = computeDueDates(facts.dateHired);
     const relevantKey =
         stage === "first_evaluation"
-            ? ("day30" as DueKey)
+            ? ("first" as DueKey)
             : stage === "pip_1"
               ? pipDueKey(facts)
               : stage === "second_evaluation"
-                ? ("day60" as DueKey)
-                : stage === "third_evaluation"
-                  ? ("day90" as DueKey)
-                  : stage === "recommendation" || stage === "regularization"
+                ? ("second" as DueKey)
+                : stage === "recommendation" || stage === "regularization"
                     ? ("sixth" as DueKey)
                     : null;
     const identity = [employee?.department_name, employee?.position].filter(
@@ -167,10 +164,9 @@ export function WorkspaceHero({
                     ) : null}
                     {dueDates ? (
                         <dl className="space-y-1 pt-2 text-sm">
-                            <DueRow label="30-day due" due={dueDates.day30} dueKey="day30" relevantKey={relevantKey} />
-                            <DueRow label="60-day due" due={dueDates.day60} dueKey="day60" relevantKey={relevantKey} />
-                            <DueRow label="90-day due" due={dueDates.day90} dueKey="day90" relevantKey={relevantKey} />
-                            <DueRow label="6th-month due" due={dueDates.sixth} dueKey="sixth" relevantKey={relevantKey} />
+                            <DueRow label="3rd-month due · 1st evaluation" due={dueDates.first} dueKey="first" relevantKey={relevantKey} />
+                            <DueRow label="5th-month due · 2nd evaluation" due={dueDates.second} dueKey="second" relevantKey={relevantKey} />
+                            <DueRow label="6th-month due · regularization" due={dueDates.sixth} dueKey="sixth" relevantKey={relevantKey} />
                         </dl>
                     ) : (
                         <p className="pt-2 text-sm text-muted-foreground">

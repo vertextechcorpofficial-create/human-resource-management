@@ -37,24 +37,24 @@ import {
 } from "./OverviewSection";
 import { StageRail } from "./StageRail";
 
-type DueKey = "day30" | "day60" | "day90" | "sixth";
+type DueKey = "first" | "second" | "sixth";
 
 function pipDueKey(facts: WorkflowFacts): DueKey {
     const openPip = facts.pips.find((pip) => pip.status === "open") ?? facts.pips[0] ?? null;
-    if (openPip?.evalType === "second") return "day60";
-    if (openPip?.evalType === "third") return "day90";
-    return "day30";
+    if (openPip?.evalType === "second") return "second";
+    if (openPip?.evalType === "third") return "sixth";
+    return "first";
 }
 
 function dueKeyForAction(key: NextAction["key"], facts: WorkflowFacts): DueKey | null {
-    if (key === "second_evaluation") return "day60";
-    if (key === "third_evaluation") return "day90";
+    if (key === "second_evaluation") return "second";
+
     if (key === "recommendation" || key === "regularize") return "sixth";
     if (key === "confirm_termination") return null;
     if (key === "create_pip_1" || key === "acknowledge_pip_1" || key === "evaluate_pip_1") {
         return pipDueKey(facts);
     }
-    return "day30";
+    return "first";
 }
 
 function stageHrefForAction(scope: EvaluationScope, userId: number): string {
@@ -68,7 +68,7 @@ function stageCtaLabel(bundle: WorkspaceBundle): string | null {
     const stage = deriveStage(facts);
     if (stage === "first_evaluation") return "Open 1st evaluation form";
     if (stage === "second_evaluation") return "Open 2nd evaluation form";
-    if (stage === "third_evaluation") return "Open 3rd evaluation form";
+
     if (stage === "termination_review") return "Review termination";
     if (stage === "pip_1") {
         if (bundle.pips.length === 0) return "Create PIP";
@@ -360,8 +360,7 @@ export function EvaluationWorkspace({
                     {scope === "hr" &&
                     (stage === "first_evaluation" ||
                         stage === "pip_1" ||
-                        stage === "second_evaluation" ||
-                        stage === "third_evaluation") ? (
+                        stage === "second_evaluation") ? (
                         <EarlyRegularizeBypass userId={userId} onDone={handleRefresh} />
                     ) : null}
 

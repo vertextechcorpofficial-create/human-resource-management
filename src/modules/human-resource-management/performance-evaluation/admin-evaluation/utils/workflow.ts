@@ -14,7 +14,6 @@ export type WorkflowStage =
   | "first_evaluation"
   | "pip_1"
   | "second_evaluation"
-  | "third_evaluation"
   | "recommendation"
   | "regularization"
   | "termination_review"
@@ -82,9 +81,6 @@ export function deriveStage(f: WorkflowFacts, now: Date = new Date()): WorkflowS
   const second = live.find((e) => e.evalType === "second");
   if (second === undefined) return "second_evaluation";
   if (second.result === "failed" && needsPip(f, "second")) return "pip_1";
-  const third = live.find((e) => e.evalType === "third");
-  if (third === undefined) return "third_evaluation";
-  if (third.result === "failed" && needsPip(f, "third")) return "pip_1";
   if (f.recommendationIssuedAt !== null) return "regularization";
   return "recommendation";
 }
@@ -120,14 +116,6 @@ export function deriveNextAction(f: WorkflowFacts, now: Date = new Date()): Next
   }
   if (second.result === "failed" && needsPip(f, "second")) {
     const pipAction = pipNextAction(f, "second");
-    if (pipAction !== null) return pipAction;
-  }
-  const third = live.find((e) => e.evalType === "third");
-  if (third === undefined) {
-    return { key: "third_evaluation", label: "Conduct 3rd evaluation", owner: "head" };
-  }
-  if (third.result === "failed" && needsPip(f, "third")) {
-    const pipAction = pipNextAction(f, "third");
     if (pipAction !== null) return pipAction;
   }
   if (f.recommendationIssuedAt === null) {

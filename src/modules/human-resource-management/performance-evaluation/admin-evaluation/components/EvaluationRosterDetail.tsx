@@ -19,7 +19,6 @@ const STAGE_LABELS: Record<string, string> = {
   first_evaluation: "1st evaluation",
   pip_1: "PIP",
   second_evaluation: "2nd evaluation",
-  third_evaluation: "3rd evaluation",
   recommendation: "Recommendation",
   regularization: "Regularization",
   termination_review: "Termination review",
@@ -27,16 +26,14 @@ const STAGE_LABELS: Record<string, string> = {
 };
 
 const DUE_ROWS: readonly { key: DueKey; label: string }[] = [
-  { key: "day30", label: "30-day due" },
-  { key: "day60", label: "60-day due" },
-  { key: "day90", label: "90-day due" },
-  { key: "sixth", label: "6th-month due" },
+  { key: "first", label: "3rd-month due · 1st evaluation" },
+  { key: "second", label: "5th-month due · 2nd evaluation" },
+  { key: "sixth", label: "6th-month due · regularization" },
 ];
 
 function deadlineValue(row: RosterRow, key: DueKey): string | null {
-  if (key === "day30") return row.day_30_due;
-  if (key === "day60") return row.day_60_due;
-  if (key === "day90") return row.day_90_due;
+  if (key === "first") return row.first_eval_due;
+  if (key === "second") return row.second_eval_due;
   return row.sixth_month_due;
 }
 
