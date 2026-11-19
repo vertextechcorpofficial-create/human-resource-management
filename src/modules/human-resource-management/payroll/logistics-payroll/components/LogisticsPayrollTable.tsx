@@ -99,33 +99,33 @@ export function LogisticsPayrollTable() {
 
     if (error) {
         return (
-            <div className="p-8 text-center text-red-600 bg-red-50 rounded-lg">
+            <div className="p-8 text-center text-red-600 bg-red-500/10 rounded-lg">
                 <p>Error loading payroll data: {error}</p>
             </div>
         );
     }
 
     return (
-        <div className="rounded-md border bg-white shadow-sm">
+        <div className="rounded-md border bg-card shadow-sm">
             <Table>
-                <TableHeader className="bg-slate-50 sticky top-0 z-10">
+                <TableHeader className="bg-muted sticky top-0 z-10">
                     <TableRow>
-                        <TableHead className="font-semibold text-slate-700">Name</TableHead>
-                        <TableHead className="font-semibold text-slate-700 text-right">Total Dispatches</TableHead>
-                        <TableHead className="font-semibold text-slate-700 text-right">Total Calculated Amount</TableHead>
-                        <TableHead className="font-semibold text-slate-700 text-center">Status</TableHead>
+                        <TableHead className="font-semibold text-foreground">Name</TableHead>
+                        <TableHead className="font-semibold text-foreground text-right">Total Dispatches</TableHead>
+                        <TableHead className="font-semibold text-foreground text-right">Total Calculated Amount</TableHead>
+                        <TableHead className="font-semibold text-foreground text-center">Status</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                     {isLoading ? (
                         <TableRow>
-                            <TableCell colSpan={4} className="h-24 text-center text-slate-500">
+                            <TableCell colSpan={4} className="h-24 text-center text-muted-foreground">
                                 Loading logistics payroll data...
                             </TableCell>
                         </TableRow>
                     ) : filteredData.length === 0 ? (
                         <TableRow>
-                            <TableCell colSpan={4} className="h-24 text-center text-slate-500">
+                            <TableCell colSpan={4} className="h-24 text-center text-muted-foreground">
                                 <div className="flex flex-col items-center justify-center gap-2">
                                     <PackageSearch className="h-8 w-8 text-slate-300" />
                                     <span>No records match your search or filters.</span>
@@ -143,21 +143,21 @@ export function LogisticsPayrollTable() {
                             return (
                                 <TableRow 
                                     key={row.staffId}
-                                    className="hover:bg-slate-50/50 transition-colors cursor-pointer"
+                                    className="hover:bg-muted/50 transition-colors cursor-pointer"
                                     onClick={() => openModal(row)}
                                 >
-                                    <TableCell className="text-slate-900 font-medium">{row.staffName}</TableCell>
-                                    <TableCell className="text-slate-600 text-right">{activeDispatches.length}</TableCell>
-                                    <TableCell className="font-bold text-slate-700 text-right text-base">
+                                    <TableCell className="text-foreground font-medium">{row.staffName}</TableCell>
+                                    <TableCell className="text-muted-foreground text-right">{activeDispatches.length}</TableCell>
+                                    <TableCell className="font-bold text-foreground text-right text-base">
                                         ₱{Number(displayTotal).toLocaleString('en-US', { minimumFractionDigits: 2 })}
                                     </TableCell>
                                     <TableCell className="text-center">
                                         {isFullyApproved ? (
-                                            <Badge variant="default" className="bg-green-100 text-green-700 hover:bg-green-200 border-green-200">
+                                            <Badge variant="default" className="bg-green-500/15 text-green-700 hover:bg-green-500/100/25 border-green-500/30">
                                                 <CheckCircle2 className="w-3 h-3 mr-1" /> Fully Approved
                                             </Badge>
                                         ) : (
-                                            <Badge variant="outline" className="text-amber-600 border-amber-200 bg-amber-50">
+                                            <Badge variant="outline" className="text-amber-600 border-amber-500/30 bg-amber-500/10">
                                                 Pending Dispatches
                                             </Badge>
                                         )}
@@ -178,7 +178,7 @@ export function LogisticsPayrollTable() {
                         
                         <div className="flex-1 overflow-y-auto pr-2 my-4">
                             <div className="flex items-center justify-between mb-3">
-                                <h4 className="text-sm font-semibold text-slate-700 uppercase tracking-wider">Dispatch History</h4>
+                                <h4 className="text-sm font-semibold text-foreground uppercase tracking-wider">Dispatch History</h4>
                                 <Button
                                     variant="outline"
                                     size="sm"
@@ -190,16 +190,16 @@ export function LogisticsPayrollTable() {
                             </div>
                             
                             {submitError && (
-                                <div className="flex items-center gap-2 text-red-600 bg-red-50 p-3 rounded text-sm mb-4">
+                                <div className="flex items-center gap-2 text-red-600 bg-red-500/10 p-3 rounded text-sm mb-4">
                                     <AlertCircle className="w-4 h-4" />
                                     <span>{submitError}</span>
                                 </div>
                             )}
 
-                            <div className="rounded-md border bg-white overflow-hidden shadow-sm mb-6">
+                            <div className="rounded-md border bg-card overflow-hidden shadow-sm mb-6">
                                 <Table>
                                     <TableHeader>
-                                        <TableRow className="bg-slate-100/50">
+                                        <TableRow className="bg-muted/50">
                                             <TableHead className="text-xs min-w-[150px] max-w-[200px]">PDP No</TableHead>
                                             <TableHead className="text-xs">Role</TableHead>
                                             <TableHead className="text-xs min-w-[200px] max-w-[300px]">Location</TableHead>
@@ -216,7 +216,7 @@ export function LogisticsPayrollTable() {
                                             const visibleDispatches = selectedStaff.dispatches.filter(dp => showDisregarded || !dp.isDisregarded);
                                             return visibleDispatches.length > 0 ? (
                                                 visibleDispatches.map((dp, idx) => (
-                                                    <TableRow key={idx} className={`align-top ${dp.isDisregarded ? 'bg-red-50 hover:bg-red-100/80' : ''}`}>
+                                                    <TableRow key={idx} className={`align-top ${dp.isDisregarded ? 'bg-red-500/10 hover:bg-red-500/10' : ''}`}>
                                                         <TableCell className="text-sm font-medium align-top">
                                                             <div className="min-w-[150px] max-w-[200px] whitespace-pre-wrap break-words">
                                                                 {dp.dispatchDocNo.split('\n').map((docNo, i) => (
@@ -238,7 +238,7 @@ export function LogisticsPayrollTable() {
                                                                     <div className="mt-1">
                                                                         <Badge 
                                                                             variant="secondary" 
-                                                                            className="cursor-pointer hover:bg-slate-200 text-[10px]"
+                                                                            className="cursor-pointer hover:bg-accent text-[10px]"
                                                                             onClick={(e) => {
                                                                                 e.stopPropagation();
                                                                                 setSelectedLinkedDps({ pdpNo: dp.dispatchDocNo, dps: dp.linkedDispatchNos!, location: dp.location });
@@ -250,23 +250,23 @@ export function LogisticsPayrollTable() {
                                                                 )}
                                                             </div>
                                                         </TableCell>
-                                                        <TableCell className="text-sm text-slate-600 align-top">{dp.role}</TableCell>
-                                                        <TableCell className="text-sm text-slate-600 align-top">
+                                                        <TableCell className="text-sm text-muted-foreground align-top">{dp.role}</TableCell>
+                                                        <TableCell className="text-sm text-muted-foreground align-top">
                                                             <div className="min-w-[200px] max-w-[300px] whitespace-pre-wrap break-words" title={dp.location ? dp.location.replace(/\s*\([^)]+\)/g, '').trim() : "-"}>
                                                                 {dp.location ? dp.location.replace(/\s*\([^)]+\)/g, '').trim() : "-"}
                                                             </div>
                                                         </TableCell>
-                                                        <TableCell className="text-sm text-slate-600 align-top">
+                                                        <TableCell className="text-sm text-muted-foreground align-top">
                                                             <div className="min-w-[100px] max-w-[150px] whitespace-pre-wrap break-words">
                                                                 {dp.location && dp.location.match(/\(([^)]+)\)/) ? Array.from(new Set(Array.from(dp.location.matchAll(/\(([^)]+)\)/g)).map(m => m[1]))).join('\n') : "-"}
                                                             </div>
                                                         </TableCell>
-                                                        <TableCell className="text-sm text-slate-600 align-top">
+                                                        <TableCell className="text-sm text-muted-foreground align-top">
                                                             <div className="min-w-[120px] max-w-[200px] break-words whitespace-pre-wrap">
                                                                 {dp.vehiclePlate ? `${dp.vehiclePlate} ${dp.vehicleType ? `(${dp.vehicleType})` : ''}` : '-'}
                                                             </div>
                                                         </TableCell>
-                                                        <TableCell className="text-sm text-slate-600 align-top">
+                                                        <TableCell className="text-sm text-muted-foreground align-top">
                                                             <div className="min-w-[100px]">
                                                                 {dp.timeOfDispatch ? (() => {
                                                                     const d = new Date(dp.timeOfDispatch);
@@ -277,7 +277,7 @@ export function LogisticsPayrollTable() {
                                                                 })() : "-"}
                                                             </div>
                                                         </TableCell>
-                                                        <TableCell className="text-sm text-right text-slate-500 align-top">
+                                                        <TableCell className="text-sm text-right text-muted-foreground align-top">
                                                             ₱{Number(dp.amount).toLocaleString('en-US', { minimumFractionDigits: 2 })}
                                                         </TableCell>
                                                         <TableCell className="text-right align-top">
@@ -292,11 +292,11 @@ export function LogisticsPayrollTable() {
                                                         </TableCell>
                                                         <TableCell className="text-center align-top">
                                                             {dp.isApproved ? (
-                                                                <Badge variant="default" className="bg-green-100 text-green-700 hover:bg-green-200 border-green-200 mt-1">
+                                                                <Badge variant="default" className="bg-green-500/15 text-green-700 hover:bg-green-500/100/25 border-green-500/30 mt-1">
                                                                     Approved
                                                                 </Badge>
                                                             ) : dp.isDisregarded ? (
-                                                                <Badge variant="outline" className="text-red-600 border-red-200 bg-red-100 mt-1">
+                                                                <Badge variant="outline" className="text-red-600 border-red-500/30 bg-red-500/15 mt-1">
                                                                     Disregarded
                                                                 </Badge>
                                                             ) : (
@@ -314,7 +314,7 @@ export function LogisticsPayrollTable() {
                                                 ))
                                             ) : (
                                                 <TableRow>
-                                                    <TableCell colSpan={9} className="text-center text-sm text-slate-500 py-4">
+                                                    <TableCell colSpan={9} className="text-center text-sm text-muted-foreground py-4">
                                                         No dispatches assigned.
                                                     </TableCell>
                                                 </TableRow>
@@ -340,16 +340,16 @@ export function LogisticsPayrollTable() {
                         <DialogTitle>Linked Dispatch Plans</DialogTitle>
                     </DialogHeader>
                     <div className="py-4">
-                        <p className="text-sm text-slate-500 mb-4">
+                        <p className="text-sm text-muted-foreground mb-4">
                             The following Dispatch Plans (DP) are linked to <strong>{selectedLinkedDps?.pdpNo}</strong>:
                         </p>
                         <div className="max-h-[300px] overflow-y-auto pr-2">
                             <div className="flex flex-col gap-2">
                                 {selectedLinkedDps?.dps.split(',').map((dp, idx) => (
-                                    <div key={idx} className="bg-slate-50 border rounded p-3 text-sm font-medium text-slate-700 flex flex-col gap-1">
+                                    <div key={idx} className="bg-muted border rounded p-3 text-sm font-medium text-foreground flex flex-col gap-1">
                                         <div>{dp.trim()}</div>
                                         {selectedLinkedDps.location && (
-                                            <div className="text-xs text-slate-500 font-normal">
+                                            <div className="text-xs text-muted-foreground font-normal">
                                                 {selectedLinkedDps.location.replace(/\s*\([^)]+\)/g, '').trim()}
                                                 {selectedLinkedDps.location.match(/\(([^)]+)\)/) ? ` - ${selectedLinkedDps.location.match(/\(([^)]+)\)/)![1]}` : ''}
                                             </div>
@@ -364,3 +364,4 @@ export function LogisticsPayrollTable() {
         </div>
     );
 }
+

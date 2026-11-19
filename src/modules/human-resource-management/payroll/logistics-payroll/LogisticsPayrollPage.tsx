@@ -14,9 +14,9 @@ function LogisticsPayrollContent() {
     // Initial load is now handled by LogisticsPayrollHeader
 
     return (
-        <div className="flex flex-col gap-6 p-6 h-full overflow-y-auto bg-slate-50/50">
+        <div className="flex flex-col gap-6 p-6 h-full overflow-y-auto bg-muted/50">
             <div className="flex flex-col gap-2">
-                <h1 className="text-3xl font-bold tracking-tight text-slate-900">Logistics Payroll</h1>
+                <h1 className="text-3xl font-bold tracking-tight text-foreground">Logistics Payroll</h1>
                 <p className="text-muted-foreground">
                     Manage other additions for logistics personnel based on specific cutoff periods.
                 </p>

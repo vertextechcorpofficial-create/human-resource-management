@@ -52,9 +52,9 @@ export function LogisticsPayrollHeader() {
     };
 
     return (
-        <div className="flex flex-col gap-4 mb-6 p-5 bg-white rounded-xl shadow-sm border border-slate-200">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-                <h2 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
+        <div className="flex flex-col gap-4 mb-6 p-5 bg-card rounded-xl shadow-sm border border-border">
+            <div className="flex items-center justify-between pb-4 border-b border-border">
+                <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
                     <Filter className="w-5 h-5 text-blue-600" />
                     Filter & Search
                 </h2>
@@ -63,12 +63,12 @@ export function LogisticsPayrollHeader() {
             <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
                 {/* Search */}
                 <div className="col-span-1 md:col-span-4 flex flex-col gap-2">
-                    <span className="text-sm font-medium text-slate-700">Search Personnel</span>
+                    <span className="text-sm font-medium text-foreground">Search Personnel</span>
                     <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input 
                             placeholder="Search by name or ID..." 
-                            className="pl-9 h-10 w-full bg-slate-50 border-slate-200 focus:bg-white"
+                            className="pl-9 h-10 w-full bg-muted border-border focus:bg-card"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
@@ -77,23 +77,23 @@ export function LogisticsPayrollHeader() {
 
                 {/* Month */}
                 <div className="col-span-1 md:col-span-3 flex flex-col gap-2">
-                    <span className="text-sm font-medium text-slate-700">Month</span>
+                    <span className="text-sm font-medium text-foreground">Month</span>
                     <div className="relative">
-                        <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                        <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <input 
                             type="month" 
                             value={selectedMonth}
                             onChange={(e) => setSelectedMonth(e.target.value)}
-                            className="flex h-10 w-full pl-9 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-colors focus:bg-white"
+                            className="flex h-10 w-full pl-9 rounded-md border border-border bg-muted px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-colors focus:bg-card"
                         />
                     </div>
                 </div>
 
                 {/* Cutoff */}
                 <div className="col-span-1 md:col-span-3 flex flex-col gap-2">
-                    <span className="text-sm font-medium text-slate-700">Cutoff Period</span>
+                    <span className="text-sm font-medium text-foreground">Cutoff Period</span>
                     <Select value={selectedCutoff} onValueChange={(val: "11-25" | "26-10") => setSelectedCutoff(val)}>
-                        <SelectTrigger className="h-10 bg-slate-50 border-slate-200 focus:bg-white">
+                        <SelectTrigger className="h-10 bg-muted border-border focus:bg-card">
                             <SelectValue placeholder="Select Cutoff" />
                         </SelectTrigger>
                         <SelectContent>
@@ -105,27 +105,27 @@ export function LogisticsPayrollHeader() {
 
                 {/* Actions */}
                 <div className="col-span-1 md:col-span-2 flex flex-col gap-2">
-                    <span className="text-sm font-medium text-slate-700 hidden md:block">&nbsp;</span>
+                    <span className="text-sm font-medium text-foreground hidden md:block">&nbsp;</span>
                     <div className="flex flex-row gap-2 h-10 mt-2 md:mt-0">
                         <Button onClick={handleApplyFilter} className="flex-1 bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-all px-2">
                             Apply
                         </Button>
-                        <Button variant="outline" onClick={handleClearFilter} className="flex-1 border-slate-200 hover:bg-slate-100 text-slate-700 px-2">
+                        <Button variant="outline" onClick={handleClearFilter} className="flex-1 border-border hover:bg-accent text-foreground px-2">
                             Clear
                         </Button>
                     </div>
                 </div>
 
                 {/* Show Pending Only Toggle */}
-                <div className="col-span-1 md:col-span-12 flex items-center justify-end mt-2 pt-2 border-t border-slate-100">
+                <div className="col-span-1 md:col-span-12 flex items-center justify-end mt-2 pt-2 border-t border-border">
                     <label className="flex items-center gap-2 cursor-pointer">
                         <input 
                             type="checkbox" 
-                            className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                            className="w-4 h-4 rounded border-border text-blue-600 focus:ring-blue-500"
                             checked={showPendingOnly}
                             onChange={(e) => setShowPendingOnly(e.target.checked)}
                         />
-                        <span className="text-sm font-medium text-slate-700">Show Pending Only</span>
+                        <span className="text-sm font-medium text-foreground">Show Pending Only</span>
                     </label>
                 </div>
             </div>
