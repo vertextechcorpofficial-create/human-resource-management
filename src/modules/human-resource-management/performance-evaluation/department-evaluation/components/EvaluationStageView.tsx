@@ -380,16 +380,6 @@ export function EvaluationStageView({
               readOnly={actionOwnedByOther}
               backHref={workspaceHref}
             />
-          ) : stage === "third_evaluation" ? (
-            <KpiSheetForm
-              scope={scope}
-              userId={userId}
-              evalType="third"
-              bundle={bundle}
-              onSaved={handleSaved}
-              readOnly={actionOwnedByOther}
-              backHref={workspaceHref}
-            />
           ) : stage === "pip_1" ? (
             <PipForm
               scope={scope}

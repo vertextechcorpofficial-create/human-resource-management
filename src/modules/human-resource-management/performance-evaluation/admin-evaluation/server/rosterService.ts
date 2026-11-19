@@ -348,8 +348,8 @@ export async function listEvaluationRoster(
       continue;
     }
     const stage = deriveStage(facts);
-    const day30Due = dueDates?.day30 ?? null;
-    const day60Due = dueDates?.day60 ?? null;
+    const firstEvalDue = dueDates?.first ?? null;
+    const secondEvalDue = dueDates?.second ?? null;
     const candidate = {
       user_id: employee.user_id,
       full_name: toFullName(employee),
@@ -360,16 +360,15 @@ export async function listEvaluationRoster(
           : (departmentNames.get(departmentId) ?? null),
       position: normalizeText(employee.user_position),
       date_hired: dateHired,
-      day_30_due: day30Due,
-      day_60_due: day60Due,
-      day_90_due: dueDates?.day90 ?? null,
+      first_eval_due: firstEvalDue,
+      second_eval_due: secondEvalDue,
       sixth_month_due: dueDates?.sixth ?? null,
       probation_status: probationStatus,
       stage,
       next_action: deriveNextAction(facts),
       is_overdue:
-        (stage === "first_evaluation" && isDateOverdue(day30Due)) ||
-        (stage === "second_evaluation" && isDateOverdue(day60Due)),
+        (stage === "first_evaluation" && isDateOverdue(firstEvalDue)) ||
+        (stage === "second_evaluation" && isDateOverdue(secondEvalDue)),
     };
     const parsed = RosterRowSchema.safeParse(candidate);
     if (!parsed.success) {

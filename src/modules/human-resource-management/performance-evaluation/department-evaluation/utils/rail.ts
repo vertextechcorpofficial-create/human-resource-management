@@ -16,7 +16,6 @@ export function deriveRailNodes(facts: WorkflowFacts, stage: WorkflowStage): Rai
   const live = facts.evaluations.filter((entry) => entry.voidedAt === null);
   const first = live.find((entry) => entry.evalType === "first");
   const second = live.find((entry) => entry.evalType === "second");
-  const third = live.find((entry) => entry.evalType === "third");
   const pip = facts.pips.length > 0 ? [...facts.pips].sort((a, b) => a.evaluationId - b.evaluationId)[0] : undefined;
   const pipEval: EvaluationFact | undefined =
     pip === undefined
@@ -57,20 +56,6 @@ export function deriveRailNodes(facts: WorkflowFacts, stage: WorkflowStage): Rai
       : failed
         ? "terminated"
         : stage === "second_evaluation"
-          ? "active"
-          : stage === "closed"
-            ? "terminated"
-            : "upcoming",
-  });
-
-  nodes.push({
-    key: "third",
-    label: "3rd Evaluation",
-    state: third
-      ? "done"
-      : failed
-        ? "terminated"
-        : stage === "third_evaluation"
           ? "active"
           : stage === "closed"
             ? "terminated"

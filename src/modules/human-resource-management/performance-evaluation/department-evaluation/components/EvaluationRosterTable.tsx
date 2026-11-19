@@ -56,24 +56,22 @@ export function formatRosterDate(value: string | null): string {
 }
 
 export type DeadlineTone = "overdue" | "soon" | "muted";
-export type DueKey = "day30" | "day60" | "day90" | "sixth";
+export type DueKey = "first" | "second" | "sixth";
 
 const STAGE_ORDER: Record<string, number> = {
   first_evaluation: 0,
   pip_1: 1,
   second_evaluation: 2,
-  third_evaluation: 3,
-  recommendation: 4,
-  regularization: 5,
-  termination_review: 6,
-  closed: 7,
+  recommendation: 3,
+  regularization: 4,
+  termination_review: 5,
+  closed: 6,
 };
 
-const DUE_STAGE: Record<DueKey, number> = {
-  day30: 0,
-  day60: 2,
-  day90: 3,
-  sixth: 4,
+const DUE_STAGE: Record<DueKey, readonly number[]> = {
+  first: [0],
+  second: [2],
+  sixth: [3, 4],
 };
 
 const DUE_SOON_DAYS = 30;
@@ -104,16 +102,15 @@ function parseDueDate(value: string | null): Date | null {
 }
 
 function dueValue(row: RosterRow, key: DueKey): string | null {
-  if (key === "day30") return row.day_30_due;
-  if (key === "day60") return row.day_60_due;
-  if (key === "day90") return row.day_90_due;
+  if (key === "first") return row.first_eval_due;
+  if (key === "second") return row.second_eval_due;
   return row.sixth_month_due;
 }
 
 export function deadlineToneFor(row: RosterRow, key: DueKey): DeadlineTone {
   const stageIndex = STAGE_ORDER[row.stage];
-  if (stageIndex === undefined || stageIndex >= 6) return "muted";
-  if (DUE_STAGE[key] !== stageIndex) return "muted";
+  if (stageIndex === undefined || stageIndex >= 5) return "muted";
+  if (!DUE_STAGE[key].includes(stageIndex)) return "muted";
   const target = parseDueDate(dueValue(row, key));
   if (target === null) return "muted";
   const today = new Date();
@@ -127,7 +124,7 @@ export function deadlineToneFor(row: RosterRow, key: DueKey): DeadlineTone {
 }
 
 export function attentionFor(row: RosterRow): "overdue" | "soon" | null {
-  const keys: readonly DueKey[] = ["day30", "day60", "day90", "sixth"];
+  const keys: readonly DueKey[] = ["first", "second", "sixth"];
   let soon = false;
   for (const key of keys) {
     const tone = deadlineToneFor(row, key);
@@ -150,9 +147,9 @@ function displayText(value: string | null): string {
 function nextDueKeyFor(row: RosterRow): DueKey | null {
   const stageIndex = STAGE_ORDER[row.stage];
   if (stageIndex === undefined) return null;
-  const keys: readonly DueKey[] = ["day30", "day60", "day90", "sixth"];
+  const keys: readonly DueKey[] = ["first", "second", "sixth"];
   for (const key of keys) {
-    if (DUE_STAGE[key] === stageIndex) return key;
+    if (DUE_STAGE[key].includes(stageIndex)) return key;
   }
   return null;
 }
