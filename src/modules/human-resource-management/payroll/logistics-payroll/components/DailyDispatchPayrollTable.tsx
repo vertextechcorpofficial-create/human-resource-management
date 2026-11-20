@@ -233,7 +233,7 @@ export function DailyDispatchPayrollTable() {
                                     </TableCell>
                                     <TableCell className="text-center">
                                         {dateGroup.isFullyApproved ? (
-                                            <Badge variant="default" className="bg-green-500/15 text-green-700 hover:bg-green-500/100/25 border-green-500/30">
+                                            <Badge variant="default" className="bg-green-500/15 text-green-700 hover:bg-green-500/25 border-green-500/30">
                                                 <CheckCircle2 className="w-3 h-3 mr-1" /> Approved
                                             </Badge>
                                         ) : (
@@ -296,7 +296,7 @@ export function DailyDispatchPayrollTable() {
                                             </TableCell>
                                             <TableCell className="text-center">
                                                 {plan.isFullyApproved ? (
-                                                    <Badge variant="default" className="bg-green-500/10 text-green-600 hover:bg-green-500/100/25 border-green-500/30 text-[10px] h-5">
+                                                    <Badge variant="default" className="bg-green-500/10 text-green-600 hover:bg-green-500/25 border-green-500/30 text-[10px] h-5">
                                                         Approved
                                                     </Badge>
                                                 ) : (

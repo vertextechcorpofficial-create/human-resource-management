@@ -212,7 +212,7 @@ export function CompanyProfileForm({ onCancel }: CompanyProfileFormProps) {
                                                                 size="sm"
                                                                 disabled={isUploading}
                                                                 onClick={() => form.setValue("company_logo", null)}
-                                                                className="h-9 text-red-500 hover:text-red-600 hover:bg-red-500/100/25"
+                                                                className="h-9 text-red-500 hover:text-red-600 hover:bg-red-500/25"
                                                             >
                                                                 <X className="w-4 h-4 mr-2" />
                                                                 Remove

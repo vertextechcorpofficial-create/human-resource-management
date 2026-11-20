@@ -100,7 +100,7 @@ export function ManageLogisticsDispatchList({
                     <Button 
                       variant="ghost" 
                       size="sm" 
-                      className={record.isNotPayroll ? "text-green-600 hover:text-green-700 hover:bg-green-500/100/25" : "text-red-600 hover:text-red-700 hover:bg-red-500/100/25"}
+                      className={record.isNotPayroll ? "text-green-600 hover:text-green-700 hover:bg-green-500/25" : "text-red-600 hover:text-red-700 hover:bg-red-500/25"}
                       onClick={() => onUpdateStaff({
                         dispatchPlanId: record.dispatchPlanId as number,
                         isExtra: record.isExtra,
