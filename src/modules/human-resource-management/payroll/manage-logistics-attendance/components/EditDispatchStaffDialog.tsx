@@ -270,7 +270,7 @@ export function EditDispatchStaffDialog({
                                             disabled={isLoadingUsers}
                                             placeholder="Select Helper"
                                         />
-                                        <Button variant="ghost" size="icon" onClick={() => removeHelper(index)} className="text-red-500 hover:text-red-700 hover:bg-red-500/100/25 shrink-0">
+                                        <Button variant="ghost" size="icon" onClick={() => removeHelper(index)} className="text-red-500 hover:text-red-700 hover:bg-red-500/25 shrink-0">
                                             <Trash2 className="h-4 w-4" />
                                         </Button>
                                     </div>

@@ -153,7 +153,7 @@ export function LogisticsPayrollTable() {
                                     </TableCell>
                                     <TableCell className="text-center">
                                         {isFullyApproved ? (
-                                            <Badge variant="default" className="bg-green-500/15 text-green-700 hover:bg-green-500/100/25 border-green-500/30">
+                                            <Badge variant="default" className="bg-green-500/15 text-green-700 hover:bg-green-500/25 border-green-500/30">
                                                 <CheckCircle2 className="w-3 h-3 mr-1" /> Fully Approved
                                             </Badge>
                                         ) : (
@@ -292,7 +292,7 @@ export function LogisticsPayrollTable() {
                                                         </TableCell>
                                                         <TableCell className="text-center align-top">
                                                             {dp.isApproved ? (
-                                                                <Badge variant="default" className="bg-green-500/15 text-green-700 hover:bg-green-500/100/25 border-green-500/30 mt-1">
+                                                                <Badge variant="default" className="bg-green-500/15 text-green-700 hover:bg-green-500/25 border-green-500/30 mt-1">
                                                                     Approved
                                                                 </Badge>
                                                             ) : dp.isDisregarded ? (

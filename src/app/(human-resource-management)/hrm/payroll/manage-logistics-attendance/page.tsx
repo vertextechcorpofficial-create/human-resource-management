@@ -115,7 +115,7 @@ export default async function Page() {
           </div>
         </header>
 
-        <main className="min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden p-4 sm:p-6 bg-slate-50/50">
+        <main className="min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden p-4 sm:p-6 bg-background">
           <ManageLogisticsAttendanceModule />
         </main>
       </div>
