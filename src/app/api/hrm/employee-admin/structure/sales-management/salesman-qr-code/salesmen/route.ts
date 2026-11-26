@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { directusFetch } from "../_lib";
+import {
+  extractEmployeePatch,
+  patchEmployee,
+  removeEmployeeFields,
+} from "../../_shared/employee-fields";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -25,12 +30,25 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "Missing body.data" }, { status: 400 });
     }
 
-    // Force inventory_day null (per requirement)
-    payload.inventory_day = null;
+    // Employee contact/address columns do not exist on `salesman`; save them on the employee row.
+    const employeePatch = extractEmployeePatch(payload);
+    const employeeId = Number(payload.employee_id);
+
+    if (Object.keys(employeePatch).length > 0 && !employeeId) {
+      return NextResponse.json(
+        { message: "employee_id is required to save employee address details." },
+        { status: 400 },
+      );
+    }
+
+    // Employee first: a failed address save must not leave a salesman row behind.
+    await patchEmployee(employeeId, employeePatch);
+
+    const salesmanPayload = { ...removeEmployeeFields(payload), inventory_day: null };
 
     const r = await directusFetch(`/items/salesman`, {
       method: "POST",
-      body: JSON.stringify(payload),
+      body: JSON.stringify(salesmanPayload),
     });
 
     return NextResponse.json({ data: r?.data ?? r });

@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import {
+    extractEmployeePatch,
+    patchEmployee,
+    removeEmployeeFields,
+} from "../_shared/employee-fields";
 
 const COOKIE_NAME = "vos_access_token";
 
@@ -86,56 +91,6 @@ interface PriceType {
 
 interface DirectusResponse<T> {
     data: T[];
-}
-
-type EmployeePatch = {
-    user_email?: string | null;
-    user_contact?: string | null;
-    user_province?: string | null;
-    user_city?: string | null;
-    user_brgy?: string | null;
-};
-
-function extractEmployeePatch(body: Record<string, unknown>): EmployeePatch {
-    const patch: EmployeePatch = {};
-
-    if ("user_email" in body && body.user_email !== undefined) patch.user_email = (body.user_email as string) || "";
-    if ("user_contact" in body && body.user_contact !== undefined) patch.user_contact = (body.user_contact as string) || "";
-    if ("user_province" in body && body.user_province !== undefined) patch.user_province = (body.user_province as string) || "";
-    if ("user_city" in body && body.user_city !== undefined) patch.user_city = (body.user_city as string) || "";
-    if ("user_brgy" in body && body.user_brgy !== undefined) patch.user_brgy = (body.user_brgy as string) || "";
-
-    return patch;
-}
-
-function removeEmployeeFields(body: Record<string, unknown>) {
-    const rest = { ...body };
-    delete rest.user_email;
-    delete rest.user_contact;
-    delete rest.user_province;
-    delete rest.user_city;
-    delete rest.user_brgy;
-    return rest;
-}
-
-async function patchEmployee(employeeId: number, patch: EmployeePatch) {
-    // Avoid noisy PATCH when nothing was provided
-    if (Object.keys(patch).length === 0) return;
-
-    const res = await fetch(`${DIRECTUS_URL}/items/user/${employeeId}`, {
-        method: "PATCH",
-        headers: {
-            "Authorization": `Bearer ${DIRECTUS_TOKEN}`,
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(patch),
-    });
-
-    if (!res.ok) {
-        const errorText = await res.text();
-        console.error("Error updating employee user:", errorText);
-        throw new Error("Failed to update employee details");
-    }
 }
 
 async function fetchAll<T>(collection: string, filter?: string): Promise<T[]> {
